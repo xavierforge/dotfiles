@@ -100,7 +100,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
- 載入一些 API 金鑰（本機隱藏變數）
+# 載入一些 API 金鑰（本機隱藏變數）
 [ -f ~/.zshenv.local ] && source ~/.zshenv.local
 
 # 將 poetry 執行檔路徑加入環境變數
