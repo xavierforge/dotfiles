@@ -1,7 +1,7 @@
 # =====================
-#  P10k Customization
+#  P10k 自訂設定
 # =====================
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# 啟用 Powerlevel10k 的即時提示字元（instant prompt）。這段應該盡量保持在 ~/.zshrc 的最上方。
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -10,16 +10,15 @@ fi
 # =====================
 #     Plugin Manager
 # =====================
-# Directory to store zinit and Plugin
+# 存放 Zinit 和外掛的資料夾
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
-# Manual install Zinit if it's not installed
+# 如果尚未安裝 Zinit，則自動執行下載安裝
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 
-# Source/Load Zinit
+# 載入 Zinit
 source "${ZINIT_HOME}/zinit.zsh"
-
 
 # =====================
 #       Plugins
@@ -27,7 +26,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Load powerlevel10k theme
 zinit ice depth"1" # git clone depth
 zinit light romkatv/powerlevel10k
-# Basic functionality
+# 基本功能（語法高亮、自動補齊、指令建議）
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
@@ -41,7 +40,12 @@ zinit snippet OMZP::git
 # =====================
 #      Keybindings
 # =====================
-bindkey -e # Emacs mode
+# 啟用 vi 模式並將 jk 設為回到一般模式
+set -o vi
+bindkey -M viins 'jk' vi-cmd-mode
+export KEYTIMEOUT=1
+
+# 使用 Ctrl+P / Ctrl+N 根據輸入的字首來搜尋歷史紀錄
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
@@ -55,6 +59,8 @@ alias tree="tree -alI 'node_modules|.git'"
 alias grep='grep --color=always'
 alias grepFind='grep --exclude-dir=node_modules -nr . -e'
 alias mkdir='mkdir -p'
+alias codei='code-insiders'
+alias cld='claude --dangerously-skip-permissions'
 
 
 # =====================
@@ -76,10 +82,10 @@ setopt hist_find_no_dups
 # =====================
 #  Other Customizations
 # =====================
-# Load auto completions
+# 載入自動補齊功能
 autoload -U compinit && compinit
 zinit cdreplay -q
-# Case-insensitive tab completion and coloring
+# Tab 自動補齊設定：忽略大小寫並加上顏色
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
@@ -93,3 +99,12 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 # This need fzf installed
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
+
+ 載入一些 API 金鑰（本機隱藏變數）
+[ -f ~/.zshenv.local ] && source ~/.zshenv.local
+
+# 將 poetry 執行檔路徑加入環境變數
+export PATH=$PATH:$HOME/.local/bin
+
+# 載入 uv 的 shell 自動補齊
+eval "$(uv generate-shell-completion zsh)"
