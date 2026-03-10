@@ -49,6 +49,14 @@ export KEYTIMEOUT=15
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
+# =====================
+#   Tmux Auto-Start
+# =====================
+# 確保我們處於互動式終端機，並且目前不在 Tmux 環境內
+if [[ $- == *i* ]] && [[ -z "$TMUX" ]]; then
+  # 如果 main 存在就自動 attach，不存在就直接幫你 new 一個
+  exec tmux new-session -A -s main
+fi
 
 # =====================
 #       Aliases
