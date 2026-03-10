@@ -32,5 +32,5 @@ keymap.set("n", "<C-p>", "<Cmd>BufferLinePick<CR>", opts)
 
 -- Diagnostics
 keymap.set("n", "<C-d>", function()
-  vim.diagnostic.goto_next()
+  vim.diagnostic.jump({ count = 1 })
 end, opts)

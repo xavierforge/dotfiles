@@ -1,10 +1,9 @@
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
         "mypy",
-        "pylint",
       },
       ui = {
         icons = {
@@ -16,12 +15,17 @@ return {
     },
   },
   {
-    "nvimtools/none-ls.nvim",
-    opts = function(_, opts)
-      local nls = require("null-ls")
-      opts.sources = vim.list_extend(opts.sources or {}, {
-        nls.builtins.diagnostics.mypy,
-      })
-    end,
+    "mfussenegger/nvim-lint",
+    opts = {
+      linters_by_ft = {
+        python = { "mypy" },
+      },
+    },
+  },
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      inlay_hints = { enabled = true },
+    },
   },
 }
