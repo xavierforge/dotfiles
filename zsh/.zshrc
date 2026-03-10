@@ -43,7 +43,7 @@ zinit snippet OMZP::git
 # 啟用 vi 模式並將 jk 設為回到一般模式
 set -o vi
 bindkey -M viins 'jk' vi-cmd-mode
-export KEYTIMEOUT=1
+export KEYTIMEOUT=15
 
 # 使用 Ctrl+P / Ctrl+N 根據輸入的字首來搜尋歷史紀錄
 bindkey '^p' history-search-backward
