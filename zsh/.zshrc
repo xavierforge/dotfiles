@@ -61,7 +61,11 @@ fi
 # =====================
 #       Aliases
 # =====================
-alias ls='ls -hlF --color=auto'
+if command -v gls > /dev/null 2>&1; then
+  alias ls='gls -hlF --color=auto'
+else
+  alias ls='ls -hlFG'
+fi
 alias ..='cd ../'
 alias tree="tree -alI 'node_modules|.git'"
 alias grep='grep --color=always'
@@ -69,6 +73,10 @@ alias grepFind='grep --exclude-dir=node_modules -nr . -e'
 alias mkdir='mkdir -p'
 alias codei='code-insiders'
 alias cld='claude --dangerously-skip-permissions'
+
+# 預設編輯器
+export EDITOR=nvim
+export VISUAL=nvim
 
 
 # =====================
@@ -97,16 +105,15 @@ zinit cdreplay -q
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'command ls -G $realpath 2>/dev/null || command ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'command ls -G $realpath 2>/dev/null || command ls --color $realpath'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Fuzzy finding shell integration
-# This need fzf installed
-eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+command -v fzf > /dev/null 2>&1 && eval "$(fzf --zsh)"
+command -v zoxide > /dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
 
 # 載入一些 API 金鑰（本機隱藏變數）
 [ -f ~/.zshenv.local ] && source ~/.zshenv.local
@@ -115,4 +122,4 @@ eval "$(zoxide init --cmd cd zsh)"
 export PATH=$PATH:$HOME/.local/bin
 
 # 載入 uv 的 shell 自動補齊
-eval "$(uv generate-shell-completion zsh)"
+command -v uv > /dev/null 2>&1 && eval "$(uv generate-shell-completion zsh)"
