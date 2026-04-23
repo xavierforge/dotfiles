@@ -38,6 +38,8 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.coding.mini-surround" },
     -- Test
     { import = "lazyvim.plugins.extras.test.core" },
+    -- Debug
+    { import = "lazyvim.plugins.extras.dap.core" },
     -- Ui
     { import = "lazyvim.plugins.extras.ui.mini-animate" },
     -- Plugins
