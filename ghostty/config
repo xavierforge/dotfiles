@@ -49,3 +49,6 @@ keybind = cmd+v=paste_from_clipboard
 # 設定檔管理
 keybind = cmd+comma=open_config
 keybind = cmd+shift+comma=reload_config
+
+# 切換背景透明度 (看程式碼時切不透明、放鬆時切回透明)
+keybind = cmd+shift+o=toggle_background_opacity
