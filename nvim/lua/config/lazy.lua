@@ -30,11 +30,14 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.json" },
     { import = "lazyvim.plugins.extras.lang.markdown" },
     { import = "lazyvim.plugins.extras.lang.toml" },
+    { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.yaml" },
     -- Editor
     { import = "lazyvim.plugins.extras.editor.inc-rename" },
     -- coding
     { import = "lazyvim.plugins.extras.coding.mini-surround" },
+    -- Test
+    { import = "lazyvim.plugins.extras.test.core" },
     -- Ui
     { import = "lazyvim.plugins.extras.ui.mini-animate" },
     -- Plugins
