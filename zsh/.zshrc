@@ -32,7 +32,7 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 # fzf auto completion menu
 zinit light Aloxaf/fzf-tab
-zinit load djui/alias-tips
+zinit light djui/alias-tips
 # Oh my Zsh plugins
 zinit snippet OMZP::git
 
@@ -50,17 +50,11 @@ bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 
 # =====================
-#   Tmux Auto-Start
-# =====================
-# 確保我們處於互動式終端機，並且目前不在 Tmux 環境內
-if [[ $- == *i* ]] && [[ -z "$TMUX" ]]; then
-  # 如果 main 存在就自動 attach，不存在就直接幫你 new 一個
-  exec tmux new-session -A -s main
-fi
-
-# =====================
 #       Aliases
 # =====================
+# 按需啟動 tmux：main 存在就 attach，不存在就開新 session
+alias t='tmux new-session -A -s main'
+
 if command -v gls > /dev/null 2>&1; then
   alias ls='gls -hlF --color=auto'
 else
@@ -98,8 +92,13 @@ setopt hist_find_no_dups
 # =====================
 #  Other Customizations
 # =====================
-# 載入自動補齊功能
-autoload -U compinit && compinit
+# 載入自動補齊功能（一天內使用 cache 加速啟動，超過 24h 才重建 dump）
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 zinit cdreplay -q
 # Tab 自動補齊設定：忽略大小寫並加上顏色
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
