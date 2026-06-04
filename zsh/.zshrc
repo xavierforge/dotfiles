@@ -112,7 +112,7 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'command ls -G $realpath 2>/
 
 # Fuzzy finding shell integration
 command -v fzf > /dev/null 2>&1 && eval "$(fzf --zsh)"
-command -v zoxide > /dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
+[[ -o interactive ]] && command -v zoxide > /dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
 
 # 載入一些 API 金鑰（本機隱藏變數）
 [ -f ~/.zshenv.local ] && source ~/.zshenv.local
