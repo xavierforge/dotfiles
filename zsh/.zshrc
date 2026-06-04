@@ -122,3 +122,10 @@ export PATH=$PATH:$HOME/.local/bin
 
 # 載入 uv 的 shell 自動補齊
 command -v uv > /dev/null 2>&1 && eval "$(uv generate-shell-completion zsh)"
+
+# bun completions
+[ -s "/Users/chihying/.bun/_bun" ] && source "/Users/chihying/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
