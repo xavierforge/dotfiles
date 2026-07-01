@@ -72,8 +72,6 @@ Leader 為 `<space>`（LazyVim 預設）。
 | --- | --- |
 | `jk` *(insert)* | Exit insert mode |
 | `<leader>nh` | Clear search highlights |
-| `Ctrl + A` | Select all (`gg V G`) |
-| `Ctrl + D` | Jump to next diagnostic |
 
 ### Windows / Splits
 

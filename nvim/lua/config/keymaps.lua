@@ -22,15 +22,7 @@ keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" }
 keymap.set("n", "<leader>X", "<Cmd>bd<CR>", { desc = "Close current buffer" })
 keymap.set("n", "<leader>A", "<Cmd>%bd|e#|bd#<CR>", { desc = "Close all but current buffer" })
 
--- Select all
-keymap.set("n", "<C-a>", "gg<S-v>G")
-
 -- BufferLine
 keymap.set("n", "<TAB>", "<Cmd>BufferLineCycleNext<CR>", opts)
 keymap.set("n", "<S-TAB>", "<Cmd>BufferLineCyclePrev<CR>", opts)
 keymap.set("n", "<C-p>", "<Cmd>BufferLinePick<CR>", opts)
-
--- Diagnostics
-keymap.set("n", "<C-d>", function()
-  vim.diagnostic.jump({ count = 1 })
-end, opts)

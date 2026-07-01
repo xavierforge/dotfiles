@@ -19,7 +19,7 @@ return {
       keymap.set("n", "<leader>cG", "<CMD>Crates open_repository<CR>", keymap_opts)
       keymap_opts.desc = "Open crate documentation"
       keymap.set("n", "<leader>cD", "<CMD>Crates open_documentation<CR>", keymap_opts)
-      keymap_opts.desc = "Open crate.io"
+      keymap_opts.desc = "Open crates.io"
       keymap.set("n", "<leader>cC", "<CMD>Crates open_cratesio<CR>", keymap_opts)
     end,
   },
