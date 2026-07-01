@@ -50,6 +50,19 @@ brew bundle cleanup           # list packages no longer in the Brewfile
 stow --target ~/.config -D .  # unlink everything (reverse of install)
 ```
 
+# Tmux plugins (TPM)
+
+Tmux plugins are managed by [TPM](https://github.com/tmux-plugins/tpm) and are
+**not** tracked in this repo. After the configs are linked, set it up once:
+
+```bash
+# 1. Clone TPM into the location tmux.conf expects
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+2. Start tmux, then press `<prefix> + I` (prefix is `Ctrl + S`) to install every
+   plugin listed in `tmux.conf`. Use `<prefix> + U` to update them later.
+
 # Other tools
 - [Ghostty](https://ghostty.org/)
   - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (p10k 圖示必要)
