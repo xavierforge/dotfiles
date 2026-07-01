@@ -1,5 +1,5 @@
 # =====================
-#  P10k 自訂設定
+#  P10k 自訂設定 / P10k customization
 # =====================
 # 啟用 Powerlevel10k 的即時提示字元（instant prompt）。這段應該盡量保持在 ~/.zshrc 的最上方。
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -141,9 +141,9 @@ export PATH=$PATH:$HOME/.local/bin
 # 載入 uv 的 shell 自動補齊
 command -v uv > /dev/null 2>&1 && eval "$(uv generate-shell-completion zsh)"
 
-# bun completions
-[ -s "/Users/chihying/.bun/_bun" ] && source "/Users/chihying/.bun/_bun"
+# bun 自動補齊 / bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# bun
+# bun 安裝路徑與 PATH / bun install path and PATH
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
