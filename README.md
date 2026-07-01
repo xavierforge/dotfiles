@@ -3,14 +3,22 @@
 Clone to your home folder, then run the bootstrap script:
 
 ```bash
-git clone <this-repo> ~/dotfiles
+git clone https://github.com/xavierforge/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
 
+> Make sure your login shell is **zsh** (`echo $SHELL`). If it isn't, switch
+> with `chsh -s "$(command -v zsh)"` and reopen the terminal — otherwise
+> `.zshrc` never loads. macOS already defaults to zsh; many Linux distros don't.
+
 `install.sh` links every config with GNU Stow and, **if Homebrew is present**,
 installs the dependencies from the [`Brewfile`](./Brewfile). It never installs
 a package manager for you.
+
+> If Stow complains that a target already exists (e.g. you already have a
+> `~/.zshrc`), back up or remove that file first — Stow won't overwrite files
+> it didn't create.
 
 ### macOS
 Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
