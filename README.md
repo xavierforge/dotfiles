@@ -22,6 +22,7 @@
 - [Tmux](https://github.com/tmux/tmux)
   - [tpm](https://github.com/tmux-plugins/tpm) (plugin manager)
 - [NeoVim](https://neovim.io/)
+  - [chafa](https://hpjansson.org/chafa/) (dashboard 圖片渲染必要)
 
 # Keybindings
 
