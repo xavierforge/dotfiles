@@ -62,7 +62,7 @@ else
 fi
 alias ..='cd ../'
 alias tree="tree -alI 'node_modules|.git'"
-alias grep='grep --color=always'
+alias grep='grep --color=auto'
 alias grepFind='grep --exclude-dir=node_modules -nr . -e'
 alias mkdir='mkdir -p'
 alias codei='code-insiders'
