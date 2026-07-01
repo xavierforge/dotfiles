@@ -1,2 +1,15 @@
+# macOS 系統檔 / macOS system files
 .DS_Store
+
+# tmux 外掛由 TPM 管理，不納入版本控制 / tmux plugins are managed by TPM, not tracked
 tmux/plugins/
+
+# Neovim 暫存/測試產物（沿用 LazyVim 預設）/ Neovim scratch & test artifacts (from LazyVim)
+nvim/tt.*
+nvim/.tests
+nvim/doc/tags
+nvim/debug
+nvim/.repro
+nvim/foo.*
+nvim/*.log
+nvim/data
