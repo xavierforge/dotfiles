@@ -1,9 +1,12 @@
 # How to use?
 1. Clone this repo to the home folder (`~`)
-2. Install [GNU Stow](https://www.gnu.org/software/stow/)
-3. Create `~/.config/` if the folder does not exist
-4. `cd` into `~/dotfiles`
-6. Use stow to create symlinks:
+2. `cd` into `~/dotfiles`
+3. Install every dependency (incl. GNU Stow) via [Homebrew](https://brew.sh/):
+     ```bash
+     brew bundle            # installs everything in ./Brewfile
+     ```
+4. Create `~/.config/` if the folder does not exist
+5. Use stow to create symlinks:
      ```bash
      stow --target ~/.config . # Use `stow --target ~/.config -D .` to delete
      stow zsh

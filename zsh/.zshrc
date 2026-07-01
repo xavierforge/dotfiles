@@ -111,6 +111,13 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'command ls -G $realpath 2>/
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Fuzzy finding shell integration
+# 用 fd 當後端：尊重 .gitignore、跳過 .git、含隱藏檔，速度遠快於內建 find
+if command -v fd > /dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='fd --type f --hidden --strip-cwd-prefix --exclude .git'
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"          # Ctrl-T 選檔案
+  export FZF_ALT_C_COMMAND='fd --type d --hidden --strip-cwd-prefix --exclude .git'  # Alt-C 選目錄
+fi
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 command -v fzf > /dev/null 2>&1 && eval "$(fzf --zsh)"
 [[ -o interactive ]] && command -v zoxide > /dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
 
