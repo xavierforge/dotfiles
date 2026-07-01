@@ -8,6 +8,17 @@ fi
 
 
 # =====================
+#       Homebrew
+# =====================
+# 把 brew 加進 PATH（要在下面 command -v 檢查工具之前）。
+# 路徑因平台而異：macOS ARM=/opt/homebrew、macOS Intel=/usr/local、Linux=/home/linuxbrew/.linuxbrew
+for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+  [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
+done
+unset _brew
+
+
+# =====================
 #     Plugin Manager
 # =====================
 # 存放 Zinit 和外掛的資料夾

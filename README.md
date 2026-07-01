@@ -1,16 +1,54 @@
-# How to use?
-1. Clone this repo to the home folder (`~`)
-2. `cd` into `~/dotfiles`
-3. Install every dependency (incl. GNU Stow) via [Homebrew](https://brew.sh/):
-     ```bash
-     brew bundle            # installs everything in ./Brewfile
-     ```
-4. Create `~/.config/` if the folder does not exist
-5. Use stow to create symlinks:
-     ```bash
-     stow --target ~/.config . # Use `stow --target ~/.config -D .` to delete
-     stow zsh
-     ```
+# Install
+
+Clone to your home folder, then run the bootstrap script:
+
+```bash
+git clone <this-repo> ~/dotfiles
+cd ~/dotfiles
+./install.sh
+```
+
+`install.sh` links every config with GNU Stow and, **if Homebrew is present**,
+installs the dependencies from the [`Brewfile`](./Brewfile). It never installs
+a package manager for you.
+
+### macOS
+Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
+(the Brewfile also pulls in Ghostty and the Nerd Font on macOS).
+
+### Linux
+Homebrew is not required — install the tools with your native package manager
+first, then run `./install.sh` (it will skip the Brewfile and just link configs):
+
+```bash
+# Debian/Ubuntu
+sudo apt install stow git neovim tmux fzf ripgrep fd-find tree chafa zoxide
+# Arch
+sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
+```
+
+Notes:
+- `stylua` and `uv` aren't in most distro repos — install via `cargo install stylua`
+  and the [uv installer](https://docs.astral.sh/uv/).
+- On Debian/Ubuntu the `fd` binary is named `fdfind`; symlink it so the fzf
+  integration finds it: `ln -s "$(command -v fdfind)" ~/.local/bin/fd`.
+
+# Update
+
+```bash
+cd ~/dotfiles
+git pull
+./install.sh          # re-links new files + installs any new Brewfile deps
+```
+
+Other handy commands:
+
+```bash
+brew update && brew upgrade   # upgrade all Homebrew packages (macOS)
+brew bundle cleanup           # list packages no longer in the Brewfile
+                              #   add --force to actually uninstall them
+stow --target ~/.config -D .  # unlink everything (reverse of install)
+```
 
 # Other tools
 - [Ghostty](https://ghostty.org/)

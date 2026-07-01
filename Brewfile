@@ -21,6 +21,8 @@ brew "stylua"      # Lua formatter (see nvim/stylua.toml)
 brew "chafa"       # renders the Neovim dashboard image
 brew "uv"          # Python package/venv manager
 
-# --- Apps & fonts ---
-cask "ghostty"
-cask "font-meslo-lg-nerd-font"  # Nerd Font for p10k / tmux glyphs
+# --- Apps & fonts (macOS only; casks don't exist on Linux) ---
+if OS.mac?
+  cask "ghostty"
+  cask "font-meslo-lg-nerd-font"  # Nerd Font for p10k / tmux glyphs
+end
