@@ -22,6 +22,7 @@ require("lazy").setup({
       import = "lazyvim.plugins",
       opts = { colorscheme = "catppuccin-nvim" },
     },
+    -- 以下為啟用的 LazyVim extras 與自訂外掛 / Enabled LazyVim extras and custom plugins
     -- import/override with your plugins
     -- LSP
     { import = "lazyvim.plugins.extras.lang.python" },

@@ -1,5 +1,5 @@
 # =====================
-#  外觀與視窗設定
+#  外觀與視窗設定 / Appearance & window
 # =====================
 theme = Catppuccin Frappe
 # Nerd Font 必須安裝，p10k 及 tmux 狀態列圖示依賴此字型
@@ -18,7 +18,7 @@ window-decoration = true
 working-directory = home
 
 # =====================
-#  系統與鍵盤設定 
+#  系統與鍵盤設定 / System & keyboard
 # =====================
 # 將 Mac 的 Option 鍵視為終端機裡的 Alt (Meta) 鍵
 # (這對在 Tmux 或 Vim 裡面使用組合鍵非常重要)
@@ -28,7 +28,7 @@ macos-option-as-alt = true
 desktop-notifications = true
 
 # =====================
-#  游標與滑鼠設定 
+#  游標與滑鼠設定 / Cursor & mouse
 # =====================
 # 打字時自動隱藏滑鼠游標
 mouse-hide-while-typing = true
@@ -37,7 +37,7 @@ mouse-hide-while-typing = true
 link-url = true
 
 # =====================
-#  剪貼簿與快捷鍵 
+#  剪貼簿與快捷鍵 / Clipboard & keybindings
 # =====================
 # 啟用貼上保護 (當貼上的內容包含換行符號時，會先詢問確認，防止多行指令意外直接執行)
 clipboard-paste-protection = true
