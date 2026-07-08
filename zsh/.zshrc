@@ -147,3 +147,6 @@ command -v uv > /dev/null 2>&1 && eval "$(uv generate-shell-completion zsh)"
 # bun 安裝路徑與 PATH / bun install path and PATH
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# bun completions
+[ -s "/Users/chihying/.bun/_bun" ] && source "/Users/chihying/.bun/_bun"
