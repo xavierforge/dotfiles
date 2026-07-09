@@ -64,6 +64,27 @@ return {
       table.insert(opts.dashboard.sections, { section = "keys", gap = 1, padding = 1 })
       -- 顯示啟動耗時 / Show startup time
       table.insert(opts.dashboard.sections, { section = "startup" })
+
+      -- 開啟 neo-tree 時關掉 dashboard，避免固定寬度的圖片浮動視窗蓋住側邊欄
+      -- Close the dashboard when neo-tree opens, so its fixed-width floating
+      -- image window doesn't overlap the sidebar in a narrow window
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "neo-tree",
+        callback = function()
+          -- 延後到下一個 tick：此時 neo-tree 的 filetype 才剛設定，split 還沒建好，
+          -- 這時畫面上可能只有 dashboard 那一個視窗，直接刪 buffer 會撞到 E444
+          -- Defer to the next tick: neo-tree has only just set its filetype here,
+          -- the split doesn't exist yet, so the dashboard window may still be the
+          -- only window — deleting its buffer now would hit E444 (last window)
+          vim.schedule(function()
+            for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+              if vim.b[buf].snacks_main then
+                pcall(vim.api.nvim_buf_delete, buf, { force = true })
+              end
+            end
+          end)
+        end,
+      })
     end,
   },
 }
