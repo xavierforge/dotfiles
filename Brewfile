@@ -7,6 +7,7 @@ brew "stow"        # symlink manager for these dotfiles
 brew "git"
 brew "neovim"
 brew "tmux"
+brew "herdr"       # terminal workspace manager, 逐步取代 tmux
 
 # --- Shell 與導覽 / Shell & navigation ---
 brew "fzf"         # fuzzy finder
