@@ -38,6 +38,9 @@ sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
 Notes:
 - `stylua` and `uv` aren't in most distro repos — install via `cargo install stylua`
   and the [uv installer](https://docs.astral.sh/uv/).
+- `herdr` isn't packaged by distros either. With Homebrew it comes from the
+  Brewfile; without it, use `curl -fsSL https://herdr.dev/install.sh | sh`
+  (see [Herdr](#herdr) below).
 - On Debian/Ubuntu the `fd` binary is named `fdfind`; symlink it so the fzf
   integration finds it: `ln -s "$(command -v fdfind)" ~/.local/bin/fd`.
 
@@ -71,7 +74,35 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 2. Start tmux, then press `<prefix> + I` (prefix is `Ctrl + S`) to install every
    plugin listed in `tmux.conf`. Use `<prefix> + U` to update them later.
 
+# Herdr
+
+[Herdr](https://herdr.dev) 是正在取代 tmux 的終端工作區管理器，設定檔為
+`herdr/config.toml`，install.sh 會把它連到 herdr 讀取的位置
+`~/.config/herdr/config.toml`。
+
+Herdr 由 Homebrew 管理（在 Brewfile 裡），升級走 `brew upgrade herdr`，
+**不要**用內建的 `herdr update` — 那個自我更新器是給官方安裝腳本裝在
+`~/.local/bin/herdr` 的版本用的，會去覆寫 brew 管理的檔案。同理，
+`herdr channel set preview` 的 preview 頻道在 brew 上也拿不到，brew 只跟 stable。
+真的要用 preview，就得改回官方安裝腳本：
+
+```bash
+curl -fsSL https://herdr.dev/install.sh | sh
+```
+
+改完設定後讓執行中的 server 重新載入（不必重開 session）：
+
+```bash
+herdr server reload-config
+```
+
+> `~/.config/herdr/` 同時放 socket、log 與 `session.json`，所以 install.sh 會先
+> `mkdir -p` 這個真實目錄，讓 Stow 只連結 `config.toml`。少了這一步，Stow 會在
+> 全新機器上把整個目錄折疊成一個指向本 repo 的符號連結，執行期檔案就會被寫進
+> dotfiles 裡。
+
 # Other tools
+- [Herdr](https://herdr.dev) (terminal workspace manager, 逐步取代 tmux)
 - [Ghostty](https://ghostty.org/)
   - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (p10k 圖示必要)
 - [Zsh](https://www.zsh.org/)
@@ -88,7 +119,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Keybindings
 
-只列自己客製化的部分。LazyVim / Ghostty / Tmux 原生預設快捷鍵不重複列出。
+只列自己客製化的部分。LazyVim / Ghostty / Tmux / Herdr 原生預設快捷鍵不重複列出。
 
 ## Ghostty
 
@@ -107,6 +138,33 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 | `Ctrl + P` | History search backward (prefix match) |
 | `Ctrl + N` | History search forward (prefix match) |
 | `t` *(command)* | Attach/create tmux session `main` |
+
+## Herdr
+
+Prefix 為 **`Ctrl + S`**，與下方 tmux 一致，兩邊肌肉記憶不用切換。
+綁定的來源對應寫在 `herdr/config.toml` 每個設定上方的 `# tmux:` 註解裡。
+
+| Key | Action |
+| --- | --- |
+| `<prefix> \|` | Split pane 左右 |
+| `<prefix> _` | Split pane 上下 |
+| `<prefix> c` | 新增 tab |
+| `<prefix> ,` | Rename tab |
+| `<prefix> r` | 進入 resize 模式（再用 `h/j/k/l` 調整，`Esc` 離開） |
+| `<prefix> R` | Reload `config.toml` |
+| `Ctrl + h / j / k / l` | 切換 pane（不需 prefix） |
+| `<prefix> [` | 進入 copy mode |
+| `Alt + 1` ~ `Alt + 9` | 直接切換到第 N 個 tab |
+
+與 tmux 的兩處差異：
+
+- **Resize 是「模式」不是連按**。tmux 是 `<prefix>` 後連按 `h/j/k/l`；herdr 是
+  `<prefix> r` 進入模式後再調整，`Esc` 離開。連帶地 reload 從 tmux 的
+  `<prefix> r` 移到 `<prefix> R`（herdr 預設）。
+- **Session 存檔不需要按鍵**。tmux-resurrect 的 `<prefix> Ctrl+S` / `Ctrl+R`
+  由 herdr 的 server/client 架構原生取代。
+
+切換 pane 的 `Ctrl + h/j/k/l` 不需要 prefix，與原本 vim-tmux-navigator 的手感相同。
 
 ## Tmux
 
