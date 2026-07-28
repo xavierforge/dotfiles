@@ -4,6 +4,13 @@
 # tmux 外掛由 TPM 管理，不納入版本控制 / tmux plugins are managed by TPM, not tracked
 tmux/plugins/
 
+# herdr 執行期產物；只有 config.toml 該進版控
+# herdr runtime artifacts — only config.toml belongs in git
+herdr/*.sock
+herdr/*.log
+herdr/session.json
+herdr/.plugins.lock
+
 # Neovim 暫存/測試產物（沿用 LazyVim 預設）/ Neovim scratch & test artifacts (from LazyVim)
 nvim/tt.*
 nvim/.tests

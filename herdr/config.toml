@@ -1,0 +1,56 @@
+# tmux.conf 的移植版：只寫跟 herdr 預設不同的項目，每項標出原始 tmux 行。
+# 預設值見 herdr --default-config；改完用 herdr server reload-config 套用。
+
+[theme]
+# tmux: @catppuccin_flavor（herdr 預設就是 catppuccin / catppuccin-latte）
+auto_switch = true
+
+[keys]
+# tmux: set -g prefix C-s
+prefix = "ctrl+s"
+
+# tmux: bind | split-window -h
+split_vertical = "prefix+|"
+# tmux: bind _ split-window -v
+split_horizontal = "prefix+_"
+
+# tmux: bind , rename-window
+rename_tab = "prefix+comma"
+
+# tmux: bind -n M-1 .. M-5 select-window
+# 索引式綁定只吃 1..9 這個寫法。
+switch_tab = "alt+1..9"
+
+# tmux: setw -g mode-keys vi + copy-mode-vi 'v' begin-selection
+# copy_mode 沒有預設鍵位，不寫就沒得按；模式內部的按鍵不可設定。
+copy_mode = "prefix+["
+
+# tmux: vim-tmux-navigator 的 Ctrl+h/j/k/l（herdr 預設是 prefix+h/j/k/l）
+focus_pane_left = "ctrl+h"
+focus_pane_down = "ctrl+j"
+focus_pane_up = "ctrl+k"
+focus_pane_right = "ctrl+l"
+
+# tmux: setw -g monitor-bell on（用響鈴標記 agent 完成）
+# 預設 off。"terminal" = herdr 攔下 agent 送的 OSC 9 後轉交 Ghostty 顯示 macOS
+# 橫幅，需搭配 ghostty 的 desktop-notifications = true，且視窗失焦才會跳。
+# 要驗證請送真的 OSC 9 到 pane tty；herdr notification show 不走 delivery
+# （一律 in-app toast），拿它測會誤判成沒生效。
+[ui.toast]
+delivery = "terminal"
+
+# ---- 其餘 tmux 設定的下落 ----
+# 預設已相同，不必寫：
+#   mouse on -> mouse_capture；tmux-yank -> copy_on_select；bind c -> new_tab
+#   split 的 -c "#{pane_current_path}" -> [terminal] new_cwd 預設 follow
+#   resurrect + continuum -> server/client 架構原生保留 session
+#   [ui.sound] enabled 預設 true
+# 改用 herdr 預設鍵位：
+#   bind r 重載 -> prefix+shift+r（prefix+r 讓給天天用的 resize_mode）
+#   bind -r hjkl 調整大小 -> resize_mode，prefix+r 進入後再按 h/j/k/l，Esc 離開
+# 沒有對應功能，直接捨棄：
+#   default-terminal / terminal-features / extended-keys（herdr 自己就是終端機）
+#   base-index / pane-base-index / renumber-windows（tab 編號不可調）
+#   status-position 與整段 catppuccin 狀態列（herdr 用 sidebar，見 [ui.sidebar.*]）
+#   @continuum-restore off（沒有對應開關）
+#   tpm / tmux-sensible（無 TPM，行為已內建）

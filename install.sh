@@ -106,6 +106,14 @@ link_pkg() {
 
 step "Linking configs with stow"
 mkdir -p "$HOME/.config"
+# herdr 會把 socket、log、session.json 寫進自己的設定目錄。先把它建成「真實目錄」，
+# stow 才會只連結底下的 config.toml；否則在全新機器上整個目錄會被折疊成指向這個
+# repo 的符號連結，執行期產物就會被寫進 dotfiles 裡。
+# herdr writes sockets, logs and session.json into its own config dir. Create it
+# as a real directory first so stow links just config.toml inside it; otherwise on
+# a fresh machine stow folds the whole directory into one symlink into this repo
+# and herdr's runtime files end up inside the dotfiles tree.
+mkdir -p "$HOME/.config/herdr"
 link_pkg "."   "$HOME/.config" "~/.config configs"
 link_pkg "zsh" "$HOME"         "home-level zsh configs"
 
