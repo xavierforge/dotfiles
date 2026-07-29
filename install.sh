@@ -286,16 +286,21 @@ fi
 link_pkg "."   "$HOME/.config" "~/.config configs"
 link_pkg "zsh" "$HOME"         "home-level zsh configs"
 
-# 舊版的忽略清單漏了 repo 根目錄的 git 中繼資料，會在 ~/.config 留下 .git 與
-# .gitignore 兩個連結，讓 ~/.config 在 git 眼裡整個變成這個 repo。現在忽略掉之後
-# stow 不會回頭清，只能自己收；真實的 ~/.config/.git 目錄不會被動到。
-# Older ignore lists missed this repo's own git metadata and left .git and
-# .gitignore linked inside ~/.config, which made git treat ~/.config as this
-# repo. Now that they are ignored stow will not clean them up, so do it here.
-# A real ~/.config/.git directory is never touched, only a symlink into us.
-for stale in .git .gitignore; do
+# 舊版目錄結構與忽略清單在 ~/.config 頂層留下的連結。stow 現在不會再建立它們，
+# 但也不會回頭清，只能自己收：
+#   .git / .gitignore  舊忽略清單漏掉，害 ~/.config 在 git 眼裡變成這個 repo
+#   .neoconf.json      舊結構的殘留，真正的檔案在 ~/.config/nvim/ 底下
+# 只認「指向本 repo 的符號連結」，同名的真實檔案或目錄一律不動。
+# Links that older layouts and ignore lists left at the top of ~/.config. Stow
+# no longer creates them but will not clean them up either, so do it here:
+#   .git / .gitignore  missed by the old ignore list, made git treat ~/.config
+#                      as this repo
+#   .neoconf.json      stale path; the real file lives under ~/.config/nvim/
+# Only symlinks into this repo are matched; a real file or directory of the
+# same name is never touched.
+for stale in .git .gitignore .neoconf.json; do
   unlink_if_ours "$HOME/.config/$stale" \
-    "Removed a leftover $stale link an older ignore list allowed into ~/.config"
+    "Removed a leftover $stale link that stow no longer creates"
 done
 
 # 換過選擇的話，把上一個多工器留下的連結收掉。
