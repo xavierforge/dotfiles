@@ -1,3 +1,5 @@
+[English](./README.md) | [繁體中文](./README.zh-TW.md)
+
 # Install
 
 Clone to your home folder, then run the bootstrap script:
@@ -9,7 +11,7 @@ cd ~/dotfiles
 ```
 
 > Make sure your login shell is **zsh** (`echo $SHELL`). If it isn't, switch
-> with `chsh -s "$(command -v zsh)"` and reopen the terminal — otherwise
+> with `chsh -s "$(command -v zsh)"` and reopen the terminal, otherwise
 > `.zshrc` never loads. macOS already defaults to zsh; many Linux distros don't.
 
 `install.sh` links every config with GNU Stow and, **if Homebrew is present**,
@@ -17,7 +19,7 @@ installs the dependencies from the [`Brewfile`](./Brewfile). It never installs
 a package manager for you.
 
 > If Stow complains that a target already exists (e.g. you already have a
-> `~/.zshrc`), back up or remove that file first — Stow won't overwrite files
+> `~/.zshrc`), back up or remove that file first. Stow won't overwrite files
 > it didn't create.
 
 ### macOS
@@ -25,7 +27,7 @@ Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
 (the Brewfile also pulls in Ghostty and the Nerd Font on macOS).
 
 ### Linux
-Homebrew is not required — install the tools with your native package manager
+Homebrew is not required. Install the tools with your native package manager
 first, then run `./install.sh` (it will skip the Brewfile and just link configs):
 
 ```bash
@@ -36,8 +38,8 @@ sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
 ```
 
 Notes:
-- `stylua` and `uv` aren't in most distro repos — install via `cargo install stylua`
-  and the [uv installer](https://docs.astral.sh/uv/).
+- `stylua` and `uv` aren't in most distro repos. Install them via
+  `cargo install stylua` and the [uv installer](https://docs.astral.sh/uv/).
 - `herdr` isn't packaged by distros either. With Homebrew it comes from the
   Brewfile; without it, use `curl -fsSL https://herdr.dev/install.sh | sh`
   (see [Herdr](#herdr) below).
@@ -76,35 +78,39 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Herdr
 
-[Herdr](https://herdr.dev) 是正在取代 tmux 的終端工作區管理器，設定檔為
-`herdr/config.toml`，install.sh 會把它連到 herdr 讀取的位置
-`~/.config/herdr/config.toml`。
+[Herdr](https://herdr.dev) is the terminal workspace manager that is gradually
+replacing tmux here. Its config is `herdr/config.toml`, and `install.sh` links
+it to the path herdr reads: `~/.config/herdr/config.toml`.
 
-Herdr 由 Homebrew 管理（在 Brewfile 裡），升級走 `brew upgrade herdr`，
-**不要**用內建的 `herdr update` — 那個自我更新器是給官方安裝腳本裝在
-`~/.local/bin/herdr` 的版本用的，會去覆寫 brew 管理的檔案。同理，
-`herdr channel set preview` 的 preview 頻道在 brew 上也拿不到，brew 只跟 stable。
-真的要用 preview，就得改回官方安裝腳本：
+Herdr is managed by Homebrew (it lives in the Brewfile), so upgrade with
+`brew upgrade herdr`. Do **not** use the built-in `herdr update`: that
+self-updater is meant for the copy the official install script places in
+`~/.local/bin/herdr`, and it will overwrite the brew-managed one. For the same
+reason, the preview channel (`herdr channel set preview`) isn't reachable via
+brew, which only tracks stable. If you really want preview, switch back to the
+official installer:
 
 ```bash
 curl -fsSL https://herdr.dev/install.sh | sh
 ```
 
-改完設定後讓執行中的 server 重新載入（不必重開 session）：
+After changing the config, reload the running server (no need to restart
+sessions):
 
 ```bash
 herdr server reload-config
 ```
 
-> `~/.config/herdr/` 同時放 socket、log 與 `session.json`，所以 install.sh 會先
-> `mkdir -p` 這個真實目錄，讓 Stow 只連結 `config.toml`。少了這一步，Stow 會在
-> 全新機器上把整個目錄折疊成一個指向本 repo 的符號連結，執行期檔案就會被寫進
-> dotfiles 裡。
+> `~/.config/herdr/` also holds the socket, the logs, and `session.json`, so
+> `install.sh` first creates that real directory with `mkdir -p` and lets Stow
+> link only `config.toml`. Without that step, Stow would fold the whole
+> directory into a single symlink pointing at this repo on a fresh machine, and
+> runtime files would get written into your dotfiles.
 
 # Other tools
-- [Herdr](https://herdr.dev) (terminal workspace manager, 逐步取代 tmux)
+- [Herdr](https://herdr.dev) (terminal workspace manager, gradually replacing tmux)
 - [Ghostty](https://ghostty.org/)
-  - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (p10k 圖示必要)
+  - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (required for p10k icons)
 - [Zsh](https://www.zsh.org/)
   - [zinit](https://github.com/zdharma-continuum/zinit)
   - [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
@@ -115,11 +121,12 @@ herdr server reload-config
 - [Tmux](https://github.com/tmux/tmux)
   - [tpm](https://github.com/tmux-plugins/tpm) (plugin manager)
 - [NeoVim](https://neovim.io/)
-  - [chafa](https://hpjansson.org/chafa/) (dashboard 圖片渲染必要)
+  - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
 
 # Keybindings
 
-只列自己客製化的部分。LazyVim / Ghostty / Tmux / Herdr 原生預設快捷鍵不重複列出。
+Only the customized bindings are listed. Native LazyVim / Ghostty / Tmux /
+Herdr defaults are not repeated here.
 
 ## Ghostty
 
@@ -141,50 +148,55 @@ herdr server reload-config
 
 ## Herdr
 
-Prefix 為 **`Ctrl + S`**，與下方 tmux 一致，兩邊肌肉記憶不用切換。
-綁定的來源對應寫在 `herdr/config.toml` 每個設定上方的 `# tmux:` 註解裡。
+The prefix is **`Ctrl + S`**, the same as tmux below, so the muscle memory
+carries over between them. Each binding's tmux origin is recorded in the
+`# tmux:` comment above it in `herdr/config.toml`.
 
 | Key | Action |
 | --- | --- |
-| `<prefix> \|` | Split pane 左右 |
-| `<prefix> _` | Split pane 上下 |
-| `<prefix> c` | 新增 tab |
+| `<prefix> \|` | Split pane left/right |
+| `<prefix> _` | Split pane top/bottom |
+| `<prefix> c` | New tab |
 | `<prefix> ,` | Rename tab |
-| `<prefix> r` | 進入 resize 模式（再用 `h/j/k/l` 調整，`Esc` 離開） |
+| `<prefix> r` | Enter resize mode (then `h/j/k/l` to adjust, `Esc` to leave) |
 | `<prefix> R` | Reload `config.toml` |
-| `Ctrl + h / j / k / l` | 切換 pane（不需 prefix） |
-| `<prefix> [` | 進入 copy mode |
-| `Alt + 1` ~ `Alt + 9` | 直接切換到第 N 個 tab |
+| `Ctrl + h / j / k / l` | Switch pane (no prefix needed) |
+| `<prefix> [` | Enter copy mode |
+| `Alt + 1` ~ `Alt + 9` | Jump straight to tab N |
 
-與 tmux 的兩處差異：
+Two differences from tmux:
 
-- **Resize 是「模式」不是連按**。tmux 是 `<prefix>` 後連按 `h/j/k/l`；herdr 是
-  `<prefix> r` 進入模式後再調整，`Esc` 離開。連帶地 reload 從 tmux 的
-  `<prefix> r` 移到 `<prefix> R`（herdr 預設）。
-- **Session 存檔不需要按鍵**。tmux-resurrect 的 `<prefix> Ctrl+S` / `Ctrl+R`
-  由 herdr 的 server/client 架構原生取代。
+- **Resize is a mode, not a repeated press.** In tmux you hit `<prefix>` and
+  then repeat `h/j/k/l`; in herdr you enter the mode with `<prefix> r`, adjust,
+  then leave with `Esc`. As a knock-on effect, reload moves from tmux's
+  `<prefix> r` to `<prefix> R` (the herdr default).
+- **Saving a session needs no keybinding.** tmux-resurrect's
+  `<prefix> Ctrl+S` / `Ctrl+R` are natively replaced by herdr's server/client
+  architecture.
 
-切換 pane 的 `Ctrl + h/j/k/l` 不需要 prefix，與原本 vim-tmux-navigator 的手感相同。
+Pane switching with `Ctrl + h/j/k/l` needs no prefix, exactly like
+vim-tmux-navigator.
 
 ## Tmux
 
-Prefix 已從預設 `Ctrl+B` 改為 **`Ctrl + S`**。以下 `<prefix>` 代表按一次 prefix 後再按的鍵。
+The prefix is changed from the default `Ctrl+B` to **`Ctrl + S`**. Below,
+`<prefix>` means the key pressed after a single prefix press.
 
 | Key | Action |
 | --- | --- |
-| `<prefix> \|` | Split pane 左右 |
-| `<prefix> _` | Split pane 上下 |
-| `<prefix> h / j / k / l` | Resize pane（可連按） |
+| `<prefix> \|` | Split pane left/right |
+| `<prefix> _` | Split pane top/bottom |
+| `<prefix> h / j / k / l` | Resize pane (repeatable) |
 | `<prefix> r` | Reload `tmux.conf` |
 | `<prefix> Ctrl + S` | Save session (tmux-resurrect) |
 | `<prefix> Ctrl + R` | Restore session (tmux-resurrect) |
-| `Ctrl + h / j / k / l` | Seamless 切換 vim/tmux 窗格 (vim-tmux-navigator) |
+| `Ctrl + h / j / k / l` | Seamless vim/tmux pane switching (vim-tmux-navigator) |
 | `v` *(copy-mode)* | Begin selection |
 | `y` *(copy-mode)* | Copy selection |
 
 ## Neovim
 
-Leader 為 `<space>`（LazyVim 預設）。
+Leader is `<space>` (the LazyVim default).
 
 ### General
 
