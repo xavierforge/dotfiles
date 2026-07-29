@@ -260,11 +260,14 @@ link_pkg() {
 # 只移除「指向本 repo」的符號連結，真實檔案與執行期產物一律不動。
 # Only removes symlinks pointing into this repo; real files and runtime
 # artifacts are never touched.
+# 第二個參數是完整的說明句，因為呼叫端的理由各不相同（換多工器 / 清舊殘骸）。
+# The second argument is the whole sentence: callers unlink for different
+# reasons (switching multiplexer versus clearing an old leftover).
 unlink_if_ours() {
-  local path="$1" label="$2"
+  local path="$1" reason="$2"
   if links_into_dotfiles "$path"; then
     rm -f "$path"
-    warn "Unlinked the $label left by the previous choice: $path"
+    warn "$reason: $path"
   fi
 }
 
@@ -291,17 +294,18 @@ link_pkg "zsh" "$HOME"         "home-level zsh configs"
 # repo. Now that they are ignored stow will not clean them up, so do it here.
 # A real ~/.config/.git directory is never touched, only a symlink into us.
 for stale in .git .gitignore; do
-  unlink_if_ours "$HOME/.config/$stale" "stale $stale link"
+  unlink_if_ours "$HOME/.config/$stale" \
+    "Removed a leftover $stale link an older ignore list allowed into ~/.config"
 done
 
 # 換過選擇的話，把上一個多工器留下的連結收掉。
 # Clean up the link the previous choice left behind, if the choice changed.
 case "$MUX" in
   herdr)
-    unlink_if_ours "$TMUX_LINK" "tmux config"
+    unlink_if_ours "$TMUX_LINK" "Unlinked the tmux config, herdr is the multiplexer now"
     ;;
   tmux)
-    unlink_if_ours "$HERDR_LINK" "herdr config"
+    unlink_if_ours "$HERDR_LINK" "Unlinked the herdr config, tmux is the multiplexer now"
     # 只有在目錄已空（沒有 socket/log/session.json）時才會成功
     # Succeeds only when the dir is empty (no socket, log or session.json left)
     rmdir "$HOME/.config/herdr" 2>/dev/null || true
