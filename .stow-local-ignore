@@ -1,4 +1,8 @@
-/zsh
-README.md
+# 有這個檔案就會「完全取代」stow 內建的預設清單，所以該擋的都要自己列。
+# This list REPLACES stow's built-in defaults; anything to skip must be listed.
+/zsh              # 連到 $HOME 不是 ~/.config，install.sh 另外處理
+^README.*         # README.md / README.zh-TW.md
 Brewfile
 install.sh
+^/\.git.*         # 只擋 repo 根目錄的 .git 與 .gitignore；外掛裡的 .git 要留著
+\.DS_Store
