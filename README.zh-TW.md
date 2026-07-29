@@ -20,6 +20,28 @@ cd ~/dotfiles
 > 如果 Stow 抱怨目標已存在（例如你本來就有 `~/.zshrc`），請先備份或刪掉那個
 > 檔案。Stow 不會覆寫不是它建立的檔案。
 
+### 選擇 tmux 或 herdr
+
+這個 repo 同時放了兩套終端多工器的設定，install.sh 只會連結你選的那一套：
+
+```bash
+./install.sh --herdr    # 只要 herdr（全新機器的預設）
+./install.sh --tmux     # 只要 tmux
+./install.sh --both     # 兩個都留著
+```
+
+不帶參數直接跑 `./install.sh` 會沿用目前已經連結的那一套，所以拿它當更新腳本
+不會偷偷幫你換掉多工器。全新機器上它會互動詢問；沒有終端可問時（例如腳本內
+呼叫）就預設 herdr。腳本化的場景可以用 `DOTFILES_MUX=<tmux|herdr|both>` 環境
+變數指定，參數優先於變數。
+
+注意 `--both` 跟「不帶參數」不一樣：不帶參數是「維持現狀」，`--both` 是「就是
+要兩個」，會把先前拿掉的那一個重新連回來。
+
+切換是非破壞性的：只會移除「指向這個 repo」的符號連結，tmux 外掛、herdr 的
+session 檔案，以及任何真實設定檔都不會被動到。沒被選到的那個多工器在 Brewfile
+裡會直接跳過，不會被安裝。
+
 ### macOS
 先裝一次 [Homebrew](https://brew.sh/)，剩下的交給 `./install.sh`
 （在 macOS 上 Brewfile 也會一併裝好 Ghostty 與 Nerd Font）。
@@ -49,6 +71,7 @@ sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
 cd ~/dotfiles
 git pull
 ./install.sh          # 重新連結新檔案 + 安裝 Brewfile 新增的相依套件
+                      #   （會沿用目前的 tmux/herdr 選擇）
 ```
 
 其他常用指令：
@@ -62,8 +85,9 @@ stow --target ~/.config -D .  # 解除所有連結（install 的反向操作）
 
 # Tmux 外掛（TPM）
 
-Tmux 外掛由 [TPM](https://github.com/tmux-plugins/tpm) 管理，**不會**納入本
-repo 版控。設定檔連結完成後，做一次設定即可：
+只有選了 `tmux` 或 `both` 才需要看這段。Tmux 外掛由
+[TPM](https://github.com/tmux-plugins/tpm) 管理，**不會**納入本 repo 版控。
+設定檔連結完成後，做一次設定即可：
 
 ```bash
 # 1. 把 TPM clone 到 tmux.conf 預期的位置
@@ -76,7 +100,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Herdr
 
 [Herdr](https://herdr.dev) 是正在取代 tmux 的終端工作區管理器，設定檔為
-`herdr/config.toml`，install.sh 會把它連到 herdr 讀取的位置
+`herdr/config.toml`，`install.sh --herdr` 會把它連到 herdr 讀取的位置
 `~/.config/herdr/config.toml`。
 
 Herdr 由 Homebrew 管理（在 Brewfile 裡），升級走 `brew upgrade herdr`，
@@ -101,6 +125,9 @@ herdr server reload-config
 > dotfiles 裡。
 
 # 其他工具
+
+兩個多工器是二選一（見[選擇 tmux 或 herdr](#選擇-tmux-或-herdr)），其餘工具一律安裝。
+
 - [Herdr](https://herdr.dev)（終端工作區管理器，逐步取代 tmux）
 - [Ghostty](https://ghostty.org/)
   - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts)（p10k 圖示必要）

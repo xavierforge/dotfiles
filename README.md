@@ -22,6 +22,32 @@ a package manager for you.
 > `~/.zshrc`), back up or remove that file first. Stow won't overwrite files
 > it didn't create.
 
+### Choosing tmux or herdr
+
+This repo carries configs for both terminal multiplexers and links only the one
+you pick:
+
+```bash
+./install.sh --herdr    # herdr only (the default on a fresh machine)
+./install.sh --tmux     # tmux only
+./install.sh --both     # keep both
+```
+
+A plain `./install.sh` keeps whatever is already linked, so running it as an
+updater never switches multiplexers behind your back. On a fresh machine it
+asks, and falls back to herdr when there is no terminal to ask on.
+`DOTFILES_MUX=<tmux|herdr|both>` does the same job for scripted runs; a flag
+wins over the variable.
+
+Note that `--both` is not the same as passing nothing: no flag means "keep the
+current setup", `--both` means "make it both", which re-links the multiplexer
+you previously dropped.
+
+Switching is non-destructive: it only removes symlinks that point into this
+repo. Your tmux plugins, herdr session files, and any real config file are left
+alone. The multiplexer you didn't pick is simply skipped in the Brewfile, so it
+never gets installed.
+
 ### macOS
 Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
 (the Brewfile also pulls in Ghostty and the Nerd Font on macOS).
@@ -52,6 +78,7 @@ Notes:
 cd ~/dotfiles
 git pull
 ./install.sh          # re-links new files + installs any new Brewfile deps
+                      #   (keeps your current tmux/herdr choice)
 ```
 
 Other handy commands:
@@ -65,8 +92,9 @@ stow --target ~/.config -D .  # unlink everything (reverse of install)
 
 # Tmux plugins (TPM)
 
-Tmux plugins are managed by [TPM](https://github.com/tmux-plugins/tpm) and are
-**not** tracked in this repo. After the configs are linked, set it up once:
+Only relevant if you picked `tmux` or `both`. Tmux plugins are managed by
+[TPM](https://github.com/tmux-plugins/tpm) and are **not** tracked in this repo.
+After the configs are linked, set it up once:
 
 ```bash
 # 1. Clone TPM into the location tmux.conf expects
@@ -79,8 +107,8 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 # Herdr
 
 [Herdr](https://herdr.dev) is the terminal workspace manager that is gradually
-replacing tmux here. Its config is `herdr/config.toml`, and `install.sh` links
-it to the path herdr reads: `~/.config/herdr/config.toml`.
+replacing tmux here. Its config is `herdr/config.toml`, and `install.sh --herdr`
+links it to the path herdr reads: `~/.config/herdr/config.toml`.
 
 Herdr is managed by Homebrew (it lives in the Brewfile), so upgrade with
 `brew upgrade herdr`. Do **not** use the built-in `herdr update`: that
@@ -108,6 +136,11 @@ herdr server reload-config
 > runtime files would get written into your dotfiles.
 
 # Other tools
+
+The two multiplexers are an either/or (see
+[Choosing tmux or herdr](#choosing-tmux-or-herdr)); everything else is always
+installed.
+
 - [Herdr](https://herdr.dev) (terminal workspace manager, gradually replacing tmux)
 - [Ghostty](https://ghostty.org/)
   - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (required for p10k icons)

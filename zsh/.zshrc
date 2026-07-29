@@ -63,8 +63,14 @@ bindkey '^n' history-search-forward
 # =====================
 #       Aliases
 # =====================
-# 按需啟動 tmux：main 存在就 attach，不存在就開新 session
-alias t='tmux new-session -A -s main'
+# 按需啟動終端多工器，跟著 install.sh 連結了哪一邊走
+# herdr：直接執行就會 attach 或建立常駐 session
+# tmux ：main 存在就 attach，不存在就開新 session
+if [[ -L ~/.config/herdr/config.toml ]]; then
+  alias t='herdr'
+else
+  alias t='tmux new-session -A -s main'
+fi
 
 if command -v gls > /dev/null 2>&1; then
   alias ls='gls -hlF --color=auto'

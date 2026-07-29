@@ -6,8 +6,19 @@
 brew "stow"        # symlink manager for these dotfiles
 brew "git"
 brew "neovim"
-brew "tmux"
-brew "herdr"       # terminal workspace manager, 逐步取代 tmux
+
+# 終端多工器由 install.sh 決定，透過 HOMEBREW_DOTFILES_MUX 傳進來。
+# 一定要用 HOMEBREW_ 開頭：brew 會把其他自訂環境變數濾掉，Brewfile 讀不到。
+# 直接跑 `brew bundle` 沒帶變數時預設兩個都裝，`brew bundle cleanup` 才不會
+# 誤判成「該移除」。
+# install.sh picks the multiplexer and passes it in as
+# HOMEBREW_DOTFILES_MUX. The HOMEBREW_ prefix is required: brew scrubs other
+# custom variables out of the environment before the Brewfile is evaluated.
+# A bare `brew bundle` defaults to both, so `brew bundle cleanup` never reads an
+# unset variable as "uninstall the other one".
+mux = ENV["HOMEBREW_DOTFILES_MUX"] || "both"
+brew "tmux"  if %w[tmux both].include?(mux)   # terminal multiplexer
+brew "herdr" if %w[herdr both].include?(mux)  # terminal workspace manager, 逐步取代 tmux
 
 # --- Shell 與導覽 / Shell & navigation ---
 brew "fzf"         # fuzzy finder
