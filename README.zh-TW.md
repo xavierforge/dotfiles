@@ -14,8 +14,27 @@ cd ~/dotfiles
 > `chsh -s "$(command -v zsh)"` 切換後重開終端機，否則 `.zshrc` 根本不會載入。
 > macOS 預設就是 zsh，但很多 Linux 發行版不是。
 
-`install.sh` 會用 GNU Stow 連結所有設定檔，**如果系統上有 Homebrew**，就順便
-安裝 [`Brewfile`](./Brewfile) 裡的相依套件。它不會幫你安裝套件管理器。
+`install.sh` 會用 GNU Stow 連結所有設定檔，並檢查這些設定需要的工具是不是都裝
+好了。缺什麼會直接列出名字，附上這台機器對應的安裝指令（Homebrew、apt、pacman、
+dnf、zypper 或 apk），而且可以直接讓腳本幫你執行：
+
+```
+▶  Checking dependencies
+⚠️  Missing tools: stow zsh fd chafa
+   sudo apt-get update && sudo apt-get install -y stow zsh fd-find chafa
+Install them now with apt? [Y/n]
+```
+
+回答 `n` 就什麼都不裝，設定檔照樣會連結好。跑完之後，還沒裝的東西會在最後再列
+一次，不會被中間的訊息捲掉。它不會幫你安裝套件管理器。
+
+```bash
+./install.sh --install-deps      # 不問，直接裝缺少的工具
+./install.sh --no-install-deps   # 只回報，絕不安裝
+```
+
+腳本化的情境可以用 `DOTFILES_INSTALL_DEPS=<yes|no|ask>`。沒有終端機的執行
+（被 pipe、CI）一律不會自己安裝，只會把指令印出來。
 
 > 如果 Stow 抱怨目標已存在（例如你本來就有 `~/.zshrc`），請先備份或刪掉那個
 > 檔案。Stow 不會覆寫不是它建立的檔案。
@@ -47,23 +66,27 @@ session 檔案，以及任何真實設定檔都不會被動到。沒被選到的
 （在 macOS 上 Brewfile 也會一併裝好 Ghostty 與 Nerd Font）。
 
 ### Linux
-不需要 Homebrew。先用發行版原生的套件管理器裝好工具，再執行 `./install.sh`
-（它會跳過 Brewfile，只做設定檔連結）：
+不需要 Homebrew——`./install.sh` 會直接用發行版自己的套件管理器（apt、pacman、
+dnf、zypper 或 apk），而且安裝前一定會先問。想自己手動裝的話：
 
 ```bash
 # Debian/Ubuntu
-sudo apt install stow git neovim tmux fzf ripgrep fd-find tree chafa zoxide
+sudo apt install stow git zsh neovim tmux fzf ripgrep fd-find tree chafa zoxide
 # Arch
-sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
+sudo pacman -S stow git zsh neovim tmux fzf ripgrep fd tree chafa zoxide
 ```
 
+（用 herdr 的話可以拿掉 `tmux`；腳本只會檢查你選的那一套多工器。）
+
 注意事項：
-- 多數發行版的套件庫沒有 `stylua` 與 `uv`，請改用 `cargo install stylua` 和
-  [uv 安裝器](https://docs.astral.sh/uv/)。
-- `herdr` 同樣沒有發行版套件。有 Homebrew 的話由 Brewfile 提供；沒有的話用
-  `curl -fsSL https://herdr.dev/install.sh | sh`（見下方 [Herdr](#herdr)）。
-- Debian/Ubuntu 的 `fd` 執行檔叫 `fdfind`，建個 symlink 讓 fzf 整合找得到：
-  `ln -s "$(command -v fdfind)" ~/.local/bin/fd`。
+- 多數發行版的套件庫沒有 `stylua` 與 `uv`，所以腳本只會印出指令：
+  `cargo install stylua` 與 [uv 安裝器](https://docs.astral.sh/uv/)。
+- `herdr` 同樣沒有發行版套件。有 Homebrew 的話由 Brewfile 提供；沒有的話腳本會
+  問你要不要跑 `curl -fsSL https://herdr.dev/install.sh | sh`
+  （見下方 [Herdr](#herdr)）。
+- Debian/Ubuntu 的 `fd` 執行檔叫 `fdfind`。腳本兩個名字都認得，而且在只有
+  `fdfind` 時會自動連結成 `~/.local/bin/fd`，讓 fzf 整合找得到（`.zshrc` 已經
+  把那個目錄加進 `PATH`）。
 
 # 更新
 

@@ -14,9 +14,30 @@ cd ~/dotfiles
 > with `chsh -s "$(command -v zsh)"` and reopen the terminal, otherwise
 > `.zshrc` never loads. macOS already defaults to zsh; many Linux distros don't.
 
-`install.sh` links every config with GNU Stow and, **if Homebrew is present**,
-installs the dependencies from the [`Brewfile`](./Brewfile). It never installs
-a package manager for you.
+`install.sh` links every config with GNU Stow and checks that every tool these
+configs need is actually installed. Anything missing is listed by name, together
+with the exact install command for this machine's package manager (Homebrew,
+apt, pacman, dnf, zypper or apk), and the script offers to run it for you:
+
+```
+▶  Checking dependencies
+⚠️  Missing tools: stow zsh fd chafa
+   sudo apt-get update && sudo apt-get install -y stow zsh fd-find chafa
+Install them now with apt? [Y/n]
+```
+
+Answer `n` and nothing is installed; the configs are linked either way. Whatever
+is still missing gets listed again at the very end of the run, so the list never
+scrolls off the screen. It never installs a package manager for you.
+
+```bash
+./install.sh --install-deps      # install what's missing without asking
+./install.sh --no-install-deps   # only report, never install
+```
+
+`DOTFILES_INSTALL_DEPS=<yes|no|ask>` does the same for scripted runs. A run with
+no terminal attached (piped, CI) never installs anything on its own — it just
+prints the commands.
 
 > If Stow complains that a target already exists (e.g. you already have a
 > `~/.zshrc`), back up or remove that file first. Stow won't overwrite files
@@ -53,24 +74,30 @@ Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
 (the Brewfile also pulls in Ghostty and the Nerd Font on macOS).
 
 ### Linux
-Homebrew is not required. Install the tools with your native package manager
-first, then run `./install.sh` (it will skip the Brewfile and just link configs):
+Homebrew is not required — `./install.sh` uses the distro's own package manager
+(apt, pacman, dnf, zypper or apk) and asks before installing anything. To do it
+by hand instead:
 
 ```bash
 # Debian/Ubuntu
-sudo apt install stow git neovim tmux fzf ripgrep fd-find tree chafa zoxide
+sudo apt install stow git zsh neovim tmux fzf ripgrep fd-find tree chafa zoxide
 # Arch
-sudo pacman -S stow git neovim tmux fzf ripgrep fd tree chafa zoxide
+sudo pacman -S stow git zsh neovim tmux fzf ripgrep fd tree chafa zoxide
 ```
 
+(Drop `tmux` if you use herdr; the script only checks for the multiplexer you
+picked.)
+
 Notes:
-- `stylua` and `uv` aren't in most distro repos. Install them via
-  `cargo install stylua` and the [uv installer](https://docs.astral.sh/uv/).
+- `stylua` and `uv` aren't in most distro repos, so the script only prints their
+  commands: `cargo install stylua` and the
+  [uv installer](https://docs.astral.sh/uv/).
 - `herdr` isn't packaged by distros either. With Homebrew it comes from the
-  Brewfile; without it, use `curl -fsSL https://herdr.dev/install.sh | sh`
-  (see [Herdr](#herdr) below).
-- On Debian/Ubuntu the `fd` binary is named `fdfind`; symlink it so the fzf
-  integration finds it: `ln -s "$(command -v fdfind)" ~/.local/bin/fd`.
+  Brewfile; without it the script offers to run
+  `curl -fsSL https://herdr.dev/install.sh | sh` (see [Herdr](#herdr) below).
+- On Debian/Ubuntu the `fd` binary is named `fdfind`. The script detects either
+  name and, when only `fdfind` exists, links it to `~/.local/bin/fd` so the fzf
+  integration finds it (`.zshrc` already puts that directory on `PATH`).
 
 # Update
 

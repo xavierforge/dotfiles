@@ -5,6 +5,12 @@
 # --- 核心 / Core ---
 brew "stow"        # symlink manager for these dotfiles
 brew "git"
+# macOS 本來就有 zsh，這行是為了 Linuxbrew：那邊不裝就沒有。
+# 在 macOS 上它只是多一份較新的 zsh，不會動到登入 shell（要換得自己 chsh）。
+# macOS already ships zsh; this line is for Linuxbrew, where it is not there at
+# all. On macOS it merely adds a newer zsh and never changes your login shell
+# (that still needs chsh).
+brew "zsh"
 brew "neovim"
 
 # 終端多工器由 install.sh 決定，透過 HOMEBREW_DOTFILES_MUX 傳進來。
