@@ -1,3 +1,4 @@
+onboarding = false
 # tmux.conf 的移植版：只寫跟 herdr 預設不同的項目，每項標出原始 tmux 行。
 # 預設值見 herdr --default-config；改完用 herdr server reload-config 套用。
 
