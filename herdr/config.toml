@@ -2,10 +2,6 @@ onboarding = false
 # tmux.conf 的移植版：只寫跟 herdr 預設不同的項目，每項標出原始 tmux 行。
 # 預設值見 herdr --default-config；改完用 herdr server reload-config 套用。
 
-[theme]
-# tmux: @catppuccin_flavor（herdr 預設就是 catppuccin / catppuccin-latte）
-auto_switch = true
-
 [keys]
 # tmux: set -g prefix C-s
 prefix = "ctrl+s"
@@ -46,6 +42,8 @@ delivery = "terminal"
 #   split 的 -c "#{pane_current_path}" -> [terminal] new_cwd 預設 follow
 #   resurrect + continuum -> server/client 架構原生保留 session
 #   [ui.sound] enabled 預設 true
+#   @catppuccin_flavor -> [theme] name 預設 catppuccin（深色）；auto_switch 預設 false，
+#     不要開：Ghostty 固定 Frappe，開了會跟 macOS 外觀切成 latte（白色）
 # 改用 herdr 預設鍵位：
 #   bind r 重載 -> prefix+shift+r（prefix+r 讓給天天用的 resize_mode）
 #   bind -r hjkl 調整大小 -> resize_mode，prefix+r 進入後再按 h/j/k/l，Esc 離開
