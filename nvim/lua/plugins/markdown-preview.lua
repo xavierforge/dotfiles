@@ -1,3 +1,9 @@
+-- 只在 VPS（forge-tokyo）套用：mac 本機的 nvim 維持 plugin 預設（隨機 port、直接開瀏覽器）。
+-- mac 上的 127.0.0.1:8765 是 ssh 隧道入口，本機 nvim 若也綁同一個 port 會 EADDRINUSE。
+if (vim.uv or vim.loop).os_gethostname() ~= "forge-tokyo" then
+  return {}
+end
+
 return {
   "iamcco/markdown-preview.nvim",
   init = function()
