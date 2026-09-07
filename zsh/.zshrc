@@ -145,6 +145,31 @@ command -v fzf > /dev/null 2>&1 && eval "$(fzf --zsh)"
 # 載入一些 API 金鑰（本機隱藏變數）
 [ -f ~/.zshenv.local ] && source ~/.zshenv.local
 
+# 遠端 Markdown 預覽：讀取遠端 nvim（markdown-preview.nvim）寫在 ~/.cache/mkdp-url 的網址，
+# 透過已開好的 ssh 隧道在本機瀏覽器開啟。見 README「遠端 Markdown 預覽」。
+# Remote markdown preview: read the url the remote nvim wrote to ~/.cache/mkdp-url and open it
+# through an existing ssh tunnel. See README "Remote markdown preview".
+#   用法 / usage: mdp <ssh-host>   (或先 export MDP_HOST=<ssh-host> / or export MDP_HOST first)
+mdp() {
+  local host=${1:-$MDP_HOST}
+  if [[ -z $host ]]; then
+    echo "usage: mdp <ssh-host>  (or set MDP_HOST)" >&2
+    return 1
+  fi
+  local url
+  if ! url=$(ssh "$host" cat '~/.cache/mkdp-url' 2>/dev/null) || [[ -z $url ]]; then
+    echo "mdp: no preview url on $host (run :MarkdownPreview in the remote nvim first)" >&2
+    return 1
+  fi
+  if command -v open > /dev/null 2>&1; then
+    open "$url"
+  elif command -v xdg-open > /dev/null 2>&1; then
+    xdg-open "$url"
+  else
+    echo "$url"
+  fi
+}
+
 # 將 poetry 執行檔路徑加入環境變數
 export PATH=$HOME/.local/bin:$PATH
 
