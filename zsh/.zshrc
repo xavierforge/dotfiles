@@ -142,7 +142,7 @@ command -v fzf > /dev/null 2>&1 && eval "$(fzf --zsh)"
 [ -f ~/.zshenv.local ] && source ~/.zshenv.local
 
 # 將 poetry 執行檔路徑加入環境變數
-export PATH=$PATH:$HOME/.local/bin
+export PATH=$HOME/.local/bin:$PATH
 
 # 載入 uv 的 shell 自動補齊
 command -v uv > /dev/null 2>&1 && eval "$(uv generate-shell-completion zsh)"
