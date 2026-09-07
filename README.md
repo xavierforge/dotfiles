@@ -183,6 +183,27 @@ installed.
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
 
+# Remote markdown preview (ssh)
+
+When Neovim runs on a host you reached over ssh, `markdown-preview.nvim`
+switches to tunnel mode automatically (it checks `SSH_CONNECTION`; a local
+Neovim is unaffected): the preview server binds to `127.0.0.1:8765` on the
+remote only, and the preview url is written to `~/.cache/mkdp-url` there.
+
+1. Open a tunnel from your local machine (the port must match the remote):
+
+   ```sh
+   ssh -L 8765:127.0.0.1:8765 <ssh-host>
+   ```
+
+2. Run `:MarkdownPreview` on a markdown buffer in the remote Neovim.
+3. In another local terminal run `mdp <ssh-host>` (a function from `.zshrc`).
+   It reads the url over ssh and opens it in your default browser. For a host
+   you use often, `export MDP_HOST=<ssh-host>` and then just run `mdp`.
+
+To use a different port, set `MKDP_PORT` on the remote and use the same number
+in the `-L` flag of step 1.
+
 # Keybindings
 
 Only the customized bindings are listed. Native LazyVim / Ghostty / Tmux /

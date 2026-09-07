@@ -166,6 +166,25 @@ herdr server reload-config
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/)（dashboard 圖片渲染必要）
 
+# 遠端 Markdown 預覽（ssh）
+
+在 ssh 進去的遠端主機上開 Neovim 時，`markdown-preview.nvim` 會自動切成隧道模式
+（偵測 `SSH_CONNECTION`，本機的 Neovim 不受影響）：預覽伺服器固定綁在遠端的
+`127.0.0.1:8765`，不對外開放，並把預覽網址寫到遠端的 `~/.cache/mkdp-url`。
+
+1. 在本機開隧道連上遠端（port 要和遠端一致）：
+
+   ```sh
+   ssh -L 8765:127.0.0.1:8765 <ssh-host>
+   ```
+
+2. 在遠端的 Neovim 裡對 Markdown 檔執行 `:MarkdownPreview`。
+3. 在本機另一個終端執行 `mdp <ssh-host>`（`.zshrc` 提供的函式），它會經 ssh
+   讀取網址並用預設瀏覽器開啟。常用的主機可以 `export MDP_HOST=<ssh-host>`，之後
+   直接打 `mdp` 即可。
+
+想換 port 的話，在遠端設定 `MKDP_PORT` 環境變數，並把步驟 1 的 `-L` 改成同一個數字。
+
 # 快捷鍵
 
 只列自己客製化的部分。LazyVim / Ghostty / Tmux / Herdr 原生預設快捷鍵不重複列出。
