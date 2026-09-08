@@ -6,6 +6,10 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Omarchy environment
+if [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]]; then
+  source /usr/share/omarchy/default/bash/env-bootstrap
+fi
 
 # =====================
 #       Homebrew
