@@ -11,6 +11,8 @@ local url_file = vim.fn.expand("~/.cache/mkdp-url")
 
 return {
   "iamcco/markdown-preview.nvim",
+  -- 安裝 app/ 的 node 依賴（缺了會報 Cannot find module tslib）；機器上沒有 yarn，所以用 npm
+  build = "cd app && npm install --no-audit --no-fund",
   init = function()
     -- 固定 port，綁 127.0.0.1（不對外），透過 ssh 隧道在本機瀏覽器開啟
     vim.g.mkdp_port = port
