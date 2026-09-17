@@ -9,7 +9,7 @@ font-size = 19
 scrollback-limit = 10000
 background-opacity = 0.8
 # 背景模糊半徑 (搭配透明度產生漂亮的毛玻璃效果)
-background-blur-radius = 20
+background-blur = 20
 
 # 顯示視窗裝飾 (顯示原生的 Mac 標題列與紅黃綠燈按鈕)
 window-decoration = true
