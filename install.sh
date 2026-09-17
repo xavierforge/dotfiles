@@ -568,7 +568,24 @@ case "$MUX" in
     ;;
 esac
 
-# ---------- 5. 收尾 / Wrap up ----------
+# ---------- 5. ssh 連線復用的 socket 目錄 / ssh ControlMaster socket dir ----------
+# ~/.ssh/config 不在這個 repo 裡，但裡面的 ControlPath 指向 ~/.ssh/sockets/。ssh 不會
+# 自己建這個目錄，少了它整條連線會直接失敗（unix_listener: cannot bind to path），
+# 新機器很容易踩到。
+# ~/.ssh/config lives outside this repo, but its ControlPath points at
+# ~/.ssh/sockets/. ssh never creates that directory itself, and without it the
+# whole connection fails (unix_listener: cannot bind to path), which is an easy
+# trap on a fresh machine.
+step "Preparing the ssh ControlMaster socket directory"
+if [ -d "$HOME/.ssh/sockets" ]; then
+  ok "~/.ssh/sockets already exists"
+else
+  mkdir -p "$HOME/.ssh/sockets"
+  chmod 700 "$HOME/.ssh" "$HOME/.ssh/sockets"
+  ok "Created ~/.ssh/sockets (mode 700)"
+fi
+
+# ---------- 6. 收尾 / Wrap up ----------
 step "Done"
 if [ "$BACKUP_COUNT" -gt 0 ]; then
   warn "Backed up $BACKUP_COUNT existing file(s) with suffix .$BACKUP_SUFFIX"
