@@ -43,6 +43,16 @@ TMUX_LINK="$HOME/.config/tmux"
 HERDR_LINK="$HOME/.config/herdr/config.toml"
 DEFAULT_MUX="herdr"
 
+# hypr/ 只給 Omarchy 用：Hyprland 快捷鍵覆寫在其他機器上沒有意義，所以只在
+# 偵測到 Omarchy 時才連結。判斷方式與 .zshrc、hyprland.lua 一致：看 Omarchy 的
+# 安裝目錄在不在（$OMARCHY_PATH，預設 /usr/share/omarchy）。
+# hypr/ is Omarchy-only: the Hyprland keybinding overrides mean nothing on any
+# other machine, so they are linked only when Omarchy is detected. Detection
+# matches .zshrc and hyprland.lua: check for Omarchy's install directory
+# ($OMARCHY_PATH, defaulting to /usr/share/omarchy).
+OMARCHY_DIR="${OMARCHY_PATH:-/usr/share/omarchy}"
+if [ -d "$OMARCHY_DIR" ]; then IS_OMARCHY=yes; else IS_OMARCHY=no; fi
+
 usage() {
   cat <<'EOF'
 Usage: ./install.sh [--herdr | --tmux | --both] [--install-deps | --no-install-deps]
@@ -430,6 +440,11 @@ case "$MUX" in
   herdr) STOW_IGNORE=(--ignore='^tmux$')  ;;
   tmux)  STOW_IGNORE=(--ignore='^herdr$') ;;
 esac
+# 不是 Omarchy 就連 hypr/ 一起跳過（見上方 IS_OMARCHY）。
+# Skip hypr/ as well unless this is Omarchy (see IS_OMARCHY above).
+if [ "$IS_OMARCHY" = no ]; then
+  STOW_IGNORE+=(--ignore='^hypr$')
+fi
 
 # 先用「模擬模式」找出會被卡住的既有真實檔案，自動備份後再實際連結。
 # Use stow's simulate mode first to find existing real files that would block
@@ -508,6 +523,17 @@ mkdir -p "$HOME/.config"
 if [ "$MUX" != tmux ]; then
   mkdir -p "$HOME/.config/herdr"
 fi
+# 同理，~/.config/hypr 裡還有 Omarchy 產生的 monitors.lua、input.lua 等機器專屬
+# 檔案，只有 bindings.lua 該進 repo，所以也要先確保它是真實目錄。
+# Same story for ~/.config/hypr: it also holds Omarchy's machine-specific
+# monitors.lua, input.lua and friends, and only bindings.lua belongs in the repo,
+# so make sure it is a real directory too.
+if [ "$IS_OMARCHY" = yes ]; then
+  info "Omarchy detected ($OMARCHY_DIR), linking hypr/bindings.lua as well"
+  mkdir -p "$HOME/.config/hypr"
+else
+  dim "Not Omarchy, skipping hypr/ (Hyprland keybindings)"
+fi
 link_pkg "."   "$HOME/.config" "~/.config configs"
 link_pkg "zsh" "$HOME"         "home-level zsh configs"
 
@@ -558,5 +584,9 @@ fi
 ok "Multiplexer: $MUX"
 if [ "$MUX" != herdr ]; then
   dim "tmux plugins live outside this repo: clone TPM once, then press <prefix> + I (see README)."
+fi
+if [ "$IS_OMARCHY" = yes ]; then
+  ok "Omarchy: Hyprland keybindings linked"
+  dim "Apply and validate with: hyprctl reload && hyprctl configerrors"
 fi
 ok "All done! Open a new shell (or run 'source ~/.zshrc') to pick up changes."

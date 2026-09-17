@@ -182,6 +182,8 @@ installed.
   - [tpm](https://github.com/tmux-plugins/tpm) (plugin manager)
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
+- [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua`, linked only when
+  Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
 
 # Remote markdown preview (ssh)
 
@@ -208,6 +210,21 @@ in the `-L` flag of step 1.
 
 Only the customized bindings are listed. Native LazyVim / Ghostty / Tmux /
 Herdr defaults are not repeated here.
+
+## Hyprland / Omarchy
+
+Only linked on an Omarchy machine (`install.sh` checks for `/usr/share/omarchy`,
+or `$OMARCHY_PATH`, and skips `hypr/` everywhere else). Omarchy's default
+`Super + arrow` bindings stay as they are; these add Vim's `h/j/k/l` on top.
+Plain `Super + H/J/K/L` is avoided on purpose: Windows intercepts some Super
+combos (`Win + L` locks Windows), so `Shift` is added.
+
+| Key | Action |
+| --- | --- |
+| `Super + Shift + H / J / K / L` | Focus window left / down / up / right |
+| `Super + Ctrl + Shift + H / J / K / L` | Swap window left / down / up / right |
+
+After editing, apply and validate with `hyprctl reload && hyprctl configerrors`.
 
 ## Ghostty
 

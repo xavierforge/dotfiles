@@ -165,6 +165,8 @@ herdr server reload-config
   - [tpm](https://github.com/tmux-plugins/tpm)（外掛管理器）
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/)（dashboard 圖片渲染必要）
+- [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua`，且只在偵測到 Omarchy
+  時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
 
 # 遠端 Markdown 預覽（ssh）
 
@@ -188,6 +190,20 @@ herdr server reload-config
 # 快捷鍵
 
 只列自己客製化的部分。LazyVim / Ghostty / Tmux / Herdr 原生預設快捷鍵不重複列出。
+
+## Hyprland / Omarchy
+
+只在 Omarchy 機器上連結（`install.sh` 檢查 `/usr/share/omarchy` 或 `$OMARCHY_PATH`
+是否存在，其他機器一律略過 `hypr/`）。Omarchy 預設的 `Super + 方向鍵` 保留不動，
+這裡是在其上加一組 Vim 的 `h/j/k/l`。刻意不用 `Super + H/J/K/L`：Windows 會攔截
+部分 Super 組合（`Win + L` 會鎖定 Windows），所以多加一層 `Shift`。
+
+| Key | Action |
+| --- | --- |
+| `Super + Shift + H / J / K / L` | 焦點移到 左 / 下 / 上 / 右 的視窗 |
+| `Super + Ctrl + Shift + H / J / K / L` | 把視窗往 左 / 下 / 上 / 右 交換 |
+
+改完後用 `hyprctl reload && hyprctl configerrors` 套用並檢查。
 
 ## Ghostty
 
