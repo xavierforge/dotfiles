@@ -452,8 +452,16 @@ backup_conflicts() {
       warn "Backed up existing real file: $rel  ->  $(basename "$bak")"
       BACKUP_COUNT=$((BACKUP_COUNT + 1))
     fi
+  # 衝突訊息的措辭隨 stow 版本不同，兩種都要認得：
+  #   2.3:  ... existing target is neither a link nor a directory: <path>
+  #   2.4:  ... over existing target <path> since neither a link nor a directory ...
+  # The conflict wording differs between stow versions; match both:
+  #   2.3:  ... existing target is neither a link nor a directory: <path>
+  #   2.4:  ... over existing target <path> since neither a link nor a directory ...
   done < <(printf '%s\n' "$sim" \
-             | sed -n 's/.*existing target is neither a link nor a directory: //p')
+             | sed -n \
+                 -e 's/.*existing target is neither a link nor a directory: //p' \
+                 -e 's/.*over existing target \(.*\) since neither a link nor a directory.*/\1/p')
 }
 
 link_pkg() {
