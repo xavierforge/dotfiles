@@ -63,4 +63,7 @@ keybind = cmd+comma=open_config
 keybind = cmd+shift+comma=reload_config
 
 # 切換背景透明度 (看程式碼時切不透明、放鬆時切回透明)
+# Linux 另綁 ctrl+alt+o：Super+Shift+O 在 Omarchy 是開 Obsidian，Hyprland 會先攔走
+# Linux gets ctrl+alt+o too: Omarchy binds Super+Shift+O to Obsidian, Hyprland grabs it first
 keybind = cmd+shift+o=toggle_background_opacity
+keybind = ctrl+alt+o=toggle_background_opacity
