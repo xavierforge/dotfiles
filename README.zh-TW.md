@@ -70,7 +70,7 @@ session 檔案，以及任何真實設定檔都不會被動到。沒被選到的
 （在 macOS 上 Brewfile 也會一併裝好 Ghostty 與 Nerd Font）。
 
 ### Linux
-不需要 Homebrew——`./install.sh` 會直接用發行版自己的套件管理器（apt、pacman、
+不需要 Homebrew：`./install.sh` 會直接用發行版自己的套件管理器（apt、pacman、
 dnf、zypper 或 apk），而且安裝前一定會先問。想自己手動裝的話：
 
 ```bash
@@ -173,7 +173,7 @@ herdr 主題就會跟著 macOS 外觀切成 latte（白色），和深色的終�
   - [tpm](https://github.com/tmux-plugins/tpm)（外掛管理器）
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/)（dashboard 圖片渲染必要）
-  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)（在瀏覽器預覽 Markdown，於 ssh session 載入；見[遠端 Markdown 預覽（ssh）](#遠端-markdown-預覽ssh)）
+  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)（在瀏覽器預覽 Markdown，由 LazyVim 的 markdown extra 帶入；ssh 時改走隧道模式，見[遠端 Markdown 預覽（ssh）](#遠端-markdown-預覽ssh)）
 - [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua`，且只在偵測到 Omarchy
   時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
 

@@ -36,7 +36,7 @@ scrolls off the screen. It never installs a package manager for you.
 ```
 
 `DOTFILES_INSTALL_DEPS=<yes|no|ask>` does the same for scripted runs. A run with
-no terminal attached (piped, CI) never installs anything on its own — it just
+no terminal attached (piped, CI) never installs anything on its own, it just
 prints the commands.
 
 `install.sh` also creates `~/.ssh/sockets` (mode `700`) when it isn't there
@@ -79,7 +79,7 @@ Install [Homebrew](https://brew.sh/) once, then `./install.sh` handles the rest
 (the Brewfile also pulls in Ghostty and the Nerd Font on macOS).
 
 ### Linux
-Homebrew is not required — `./install.sh` uses the distro's own package manager
+Homebrew is not required: `./install.sh` uses the distro's own package manager
 (apt, pacman, dnf, zypper or apk) and asks before installing anything. To do it
 by hand instead:
 
@@ -192,7 +192,7 @@ installed.
   - [tpm](https://github.com/tmux-plugins/tpm) (plugin manager)
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
-  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) (markdown preview in the browser, loaded in ssh sessions; see [Remote markdown preview (ssh)](#remote-markdown-preview-ssh))
+  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) (markdown preview in the browser, pulled in by LazyVim's markdown extra; over ssh it switches to tunnel mode, see [Remote markdown preview (ssh)](#remote-markdown-preview-ssh))
 - [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua`, linked only when
   Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
 
