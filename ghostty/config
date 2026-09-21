@@ -46,6 +46,20 @@ clipboard-paste-protection = true
 keybind = cmd+c=copy_to_clipboard
 keybind = cmd+v=paste_from_clipboard
 
+# Omarchy 的 Super+C / Super+V 不會直接送進程式：Hyprland 攔下來後，對終端機視窗
+# 改送 Ctrl+Insert / Shift+Insert（見 omarchy 的 default/hypr/bindings/clipboard.lua）。
+# Ghostty 在 Linux 預設 Shift+Insert 是貼上滑鼠反白的 primary selection，不是剪貼簿，
+# 所以要明確綁到系統剪貼簿，Super+V 才貼得出從 nvim/瀏覽器複製的內容。
+# 這兩行是照抄 Omarchy 內建的 ghostty 設定，因為這份 config 會把它蓋掉。
+# Omarchy's Super+C / Super+V never reach the app directly: Hyprland intercepts
+# them and, for terminal windows, sends Ctrl+Insert / Shift+Insert instead (see
+# omarchy's default/hypr/bindings/clipboard.lua). Ghostty's Linux default binds
+# Shift+Insert to the primary selection rather than the clipboard, so bind both
+# explicitly or Super+V cannot paste what nvim or a browser copied. These mirror
+# Omarchy's stock ghostty config, which this file replaces.
+keybind = control+insert=copy_to_clipboard
+keybind = shift+insert=paste_from_clipboard
+
 # 設定檔管理
 keybind = cmd+comma=open_config
 keybind = cmd+shift+comma=reload_config
