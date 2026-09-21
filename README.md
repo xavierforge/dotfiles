@@ -39,6 +39,11 @@ scrolls off the screen. It never installs a package manager for you.
 no terminal attached (piped, CI) never installs anything on its own — it just
 prints the commands.
 
+`install.sh` also creates `~/.ssh/sockets` (mode `700`) when it isn't there
+yet. `~/.ssh/config` is not part of this repo, but its `ControlPath` points into
+that directory, and ssh never creates it on its own, so on a fresh machine every
+connection fails with `unix_listener: cannot bind to path`.
+
 > If Stow complains that a target already exists (e.g. you already have a
 > `~/.zshrc`), back up or remove that file first. Stow won't overwrite files
 > it didn't create.
@@ -156,6 +161,11 @@ sessions):
 herdr server reload-config
 ```
 
+The theme is left at herdr's own default (Catppuccin, dark) and `auto_switch`
+has to stay off (`false` is the default). Ghostty is pinned to Catppuccin
+Frappe, so turning `auto_switch` on would follow the macOS appearance and swap
+the herdr theme to latte (light) underneath a dark terminal.
+
 > `~/.config/herdr/` also holds the socket, the logs, and `session.json`, so
 > `install.sh` first creates that real directory with `mkdir -p` and lets Stow
 > link only `config.toml`. Without that step, Stow would fold the whole
@@ -182,6 +192,7 @@ installed.
   - [tpm](https://github.com/tmux-plugins/tpm) (plugin manager)
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
+  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) (markdown preview in the browser, loaded in ssh sessions; see [Remote markdown preview (ssh)](#remote-markdown-preview-ssh))
 - [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua`, linked only when
   Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
 
@@ -205,6 +216,27 @@ remote only, and the preview url is written to `~/.cache/mkdp-url` there.
 
 To use a different port, set `MKDP_PORT` on the remote and use the same number
 in the `-L` flag of step 1.
+
+# Clipboard over ssh (OSC 52)
+
+Yanking in a Neovim you reached over ssh (`y`, `yy`, and friends) ends up in the
+clipboard of the machine in front of you. LazyVim clears `clipboard` when
+`SSH_CONNECTION` is set, so `nvim/lua/config/options.lua` puts it back to
+`unnamedplus` and wires it to Neovim's built-in OSC 52 provider: the copy leaves
+as a terminal escape sequence instead of dying on the remote host. tmux forwards
+it because `tmux.conf` sets `set -s set-clipboard on` (the default `external`
+only forwards tmux's own copies, not the OSC 52 an app inside a pane writes),
+and Ghostty on the local side hands it to the system clipboard. A tmux copy-mode
+yank (`v` then `y`) on the remote reaches the local clipboard the same way. OSC
+52 is terminal-agnostic; a terminal without it just ignores the sequence and
+yanking inside Neovim keeps working.
+
+Pasting does not travel the same road. `p` in the remote Neovim reads Neovim's
+own register, because the OSC 52 *read* is deliberately left unused: terminals
+handle "let the program read my clipboard" inconsistently (some ask every time,
+some refuse, some don't implement it). To paste what is on the local clipboard,
+use the terminal's own paste shortcut (`Cmd + V` on macOS, `Super + V` or
+`Shift + Insert` on Omarchy).
 
 # Keybindings
 
@@ -231,9 +263,23 @@ After editing, apply and validate with `hyprctl reload && hyprctl configerrors`.
 | Key | Action |
 | --- | --- |
 | `Cmd + C` / `Cmd + V` | Copy / Paste |
+| `Ctrl + Insert` | Copy to clipboard |
+| `Shift + Insert` | Paste from clipboard |
 | `Cmd + ,` | Open config |
 | `Cmd + Shift + ,` | Reload config |
-| `Cmd + Shift + O` | Toggle background opacity |
+| `Cmd + Shift + O` / `Ctrl + Alt + O` | Toggle background opacity |
+
+`Ctrl + Insert` / `Shift + Insert` are there for Omarchy: Hyprland intercepts
+`Super + C` / `Super + V` and delivers them to terminal windows as those two
+combinations instead, so they have to be bound explicitly (Ghostty's Linux
+default maps `Shift + Insert` to the primary selection, not the clipboard).
+
+`Ctrl + Alt + O` is the Linux counterpart of `Cmd + Shift + O`: on Omarchy,
+`Super + Shift + O` opens Obsidian and never reaches the terminal, because
+Hyprland grabs it first.
+
+On Linux, Ghostty runs as a single instance, so a keybind change only takes
+effect after a full restart: close every Ghostty window and start it again.
 
 ## Zsh
 

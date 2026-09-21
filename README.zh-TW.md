@@ -36,6 +36,10 @@ Install them now with apt? [Y/n]
 腳本化的情境可以用 `DOTFILES_INSTALL_DEPS=<yes|no|ask>`。沒有終端機的執行
 （被 pipe、CI）一律不會自己安裝，只會把指令印出來。
 
+`install.sh` 還會在 `~/.ssh/sockets` 不存在時幫你建好（權限 `700`）。`~/.ssh/config`
+不在這個 repo 裡，但裡面的 `ControlPath` 指向這個目錄，而 ssh 不會自己建立它，全新
+機器上少了它，每條連線都會直接失敗（`unix_listener: cannot bind to path`）。
+
 > 如果 Stow 抱怨目標已存在（例如你本來就有 `~/.zshrc`），請先備份或刪掉那個
 > 檔案。Stow 不會覆寫不是它建立的檔案。
 
@@ -142,6 +146,10 @@ curl -fsSL https://herdr.dev/install.sh | sh
 herdr server reload-config
 ```
 
+主題沿用 herdr 自己的預設（Catppuccin，深色），而且 `auto_switch` 必須維持關閉
+（預設就是 `false`）。Ghostty 固定用 Catppuccin Frappe，`auto_switch` 一旦打開，
+herdr 主題就會跟著 macOS 外觀切成 latte（白色），和深色的終端機湊在一起。
+
 > `~/.config/herdr/` 同時放 socket、log 與 `session.json`，所以 install.sh 會先
 > `mkdir -p` 這個真實目錄，讓 Stow 只連結 `config.toml`。少了這一步，Stow 會在
 > 全新機器上把整個目錄折疊成一個指向本 repo 的符號連結，執行期檔案就會被寫進
@@ -165,6 +173,7 @@ herdr server reload-config
   - [tpm](https://github.com/tmux-plugins/tpm)（外掛管理器）
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/)（dashboard 圖片渲染必要）
+  - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)（在瀏覽器預覽 Markdown，於 ssh session 載入；見[遠端 Markdown 預覽（ssh）](#遠端-markdown-預覽ssh)）
 - [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua`，且只在偵測到 Omarchy
   時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
 
@@ -186,6 +195,23 @@ herdr server reload-config
    直接打 `mdp` 即可。
 
 想換 port 的話，在遠端設定 `MKDP_PORT` 環境變數，並把步驟 1 的 `-L` 改成同一個數字。
+
+# ssh 遠端的剪貼簿（OSC 52）
+
+在 ssh 進去的遠端主機上用 Neovim 複製（`y`、`yy` 之類），內容會直接進到你面前這台
+機器的系統剪貼簿。LazyVim 偵測到 `SSH_CONNECTION` 時會把 `clipboard` 清空，所以
+`nvim/lua/config/options.lua` 把它改回 `unnamedplus`，並明確指定 Neovim 內建的
+OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是卡死在遠端。tmux 之所以
+轉得過去，是因為 `tmux.conf` 設了 `set -s set-clipboard on`（預設的 `external` 只
+轉發 tmux 自己的複製動作，不會轉發 pane 裡的程式送出的 OSC 52），本機的 Ghostty 再
+把它寫進系統剪貼簿。遠端 tmux copy mode 的複製（`v` 之後按 `y`）走的是同一條路，
+一樣會回到本機剪貼簿。OSC 52 與終端機無關，不支援的終端機只會忽略這段序列，Neovim
+內部的複製貼上照常運作。
+
+貼上不走同一條路。遠端 Neovim 的 `p` 讀的是 Neovim 自己的 register，因為 OSC 52 的
+「讀取」是刻意不用的：各家終端機對「讓程式讀我的剪貼簿」處理方式不一致（有的每次
+詢問、有的直接拒絕、有的根本沒實作）。要把本機剪貼簿的內容貼到遠端，用終端機自己的
+貼上快捷鍵即可（macOS 是 `Cmd + V`，Omarchy 是 `Super + V` 或 `Shift + Insert`）。
 
 # 快捷鍵
 
@@ -210,9 +236,21 @@ herdr server reload-config
 | Key | Action |
 | --- | --- |
 | `Cmd + C` / `Cmd + V` | 複製 / 貼上 |
+| `Ctrl + Insert` | 複製到剪貼簿 |
+| `Shift + Insert` | 從剪貼簿貼上 |
 | `Cmd + ,` | 開啟設定檔 |
 | `Cmd + Shift + ,` | 重新載入設定 |
-| `Cmd + Shift + O` | 切換背景透明度 |
+| `Cmd + Shift + O` / `Ctrl + Alt + O` | 切換背景透明度 |
+
+`Ctrl + Insert` / `Shift + Insert` 是為了 Omarchy：Hyprland 會攔下 `Super + C` /
+`Super + V`，對終端機視窗改送這兩組按鍵，所以必須明確綁定（Ghostty 在 Linux 的預設
+是把 `Shift + Insert` 綁到滑鼠反白的 primary selection，不是剪貼簿）。
+
+`Ctrl + Alt + O` 是 `Cmd + Shift + O` 的 Linux 版：在 Omarchy 上
+`Super + Shift + O` 是開 Obsidian，會先被 Hyprland 攔走，根本進不到終端機。
+
+Ghostty 在 Linux 是單一 instance，改完設定檔要完全重啟才會套用新鍵位：關掉所有
+Ghostty 視窗再重新開啟。
 
 ## Zsh
 
