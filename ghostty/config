@@ -3,7 +3,11 @@
 # =====================
 theme = Catppuccin Frappe
 # Nerd Font 必須安裝，p10k 及 tmux 狀態列圖示依賴此字型
-font-family = MesloLGS Nerd Font
+# 第二行是 CJK 後備字型：不指定的話 fontconfig 會挑到 KR 版 Noto，漢字字形不對
+# Second entry is the CJK fallback: without it fontconfig picks the KR Noto and
+# Han glyphs come out in Korean forms.
+font-family = JetBrainsMono Nerd Font
+font-family = Noto Sans Mono CJK TC
 font-size = 19
 background-opacity = 0.8
 # 背景模糊半徑 (搭配透明度產生漂亮的毛玻璃效果)

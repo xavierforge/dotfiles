@@ -180,7 +180,8 @@ installed.
 
 - [Herdr](https://herdr.dev) (terminal workspace manager, gradually replacing tmux)
 - [Ghostty](https://ghostty.org/)
-  - [MesloLGS Nerd Font](https://github.com/romkatv/powerlevel10k#fonts) (required for p10k icons)
+  - [JetBrainsMono Nerd Font](https://www.nerdfonts.com/font-downloads) (required for p10k icons)
+  - Noto Sans Mono CJK TC (CJK fallback, so Han glyphs use Taiwanese forms)
 - [Zsh](https://www.zsh.org/)
   - [zinit](https://github.com/zdharma-continuum/zinit)
   - [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
