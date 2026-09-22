@@ -8,7 +8,6 @@ theme = Catppuccin Frappe
 # Han glyphs come out in Korean forms.
 font-family = JetBrainsMono Nerd Font
 font-family = Noto Sans Mono CJK TC
-font-size = 19
 background-opacity = 0.8
 # 背景模糊半徑 (搭配透明度產生漂亮的毛玻璃效果)
 background-blur = 20
@@ -71,3 +70,16 @@ keybind = cmd+shift+comma=reload_config
 # Linux gets ctrl+alt+o too: Omarchy binds Super+Shift+O to Obsidian, Hyprland grabs it first
 keybind = cmd+shift+o=toggle_background_opacity
 keybind = ctrl+alt+o=toggle_background_opacity
+
+# =====================
+#  本機覆寫 / Local overrides
+# =====================
+# 字級跟螢幕 DPI 走，不寫死在共用檔。每台機器自己放一個 local（同目錄、已 gitignore），
+# 例如 Mac Retina 寫 font-size = 19，1080p 的 Linux 寫 font-size = 11。
+# 開頭的 ? 表示檔案不存在就略過；config-file 會在整份設定讀完後才載入，所以 local 一律蓋過上面的值。
+# Font size tracks the display, so it is not pinned here. Each machine keeps
+# its own `local` next to this file (gitignored): font-size = 19 on a Retina
+# Mac, font-size = 11 on a 1080p Linux box. The leading ? makes a missing file
+# a no-op, and config-file is applied after the whole config is read, so
+# anything in local overrides the values above.
+config-file = ?local

@@ -253,6 +253,10 @@ OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是�
 Ghostty 在 Linux 是單一 instance，改完設定檔要完全重啟才會套用新鍵位：關掉所有
 Ghostty 視窗再重新開啟。
 
+字級跟螢幕走，所以不放在共用設定檔裡。寫在 `~/.config/ghostty/local`（已 gitignore，
+由 `config-file = ?local` 載入）：Mac Retina 用 `font-size = 19`，1080p 的 Linux 用
+`font-size = 11`。
+
 ## Zsh
 
 | Key | Action |

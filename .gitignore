@@ -20,3 +20,6 @@ nvim/.repro
 nvim/foo.*
 nvim/*.log
 nvim/data
+
+# Ghostty 本機覆寫（字級等跟螢幕走的設定）/ Ghostty per-machine overrides (font-size etc.)
+ghostty/local

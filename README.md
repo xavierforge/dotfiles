@@ -282,6 +282,10 @@ Hyprland grabs it first.
 On Linux, Ghostty runs as a single instance, so a keybind change only takes
 effect after a full restart: close every Ghostty window and start it again.
 
+Font size is not in the shared config because it depends on the display.
+Put it in `~/.config/ghostty/local` (gitignored, loaded via `config-file = ?local`):
+`font-size = 19` on a Retina Mac, `font-size = 11` on a 1080p Linux box.
+
 ## Zsh
 
 | Key | Action |
