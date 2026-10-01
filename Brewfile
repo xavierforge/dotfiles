@@ -47,5 +47,5 @@ if OS.mac?
   # Conflicts (and fails) if the same font was installed manually;
   # install.sh treats that as non-fatal and carries on.
   cask "font-monaspice-nerd-font"
-  cask "font-noto-sans-mono-cjk-tc"
+  cask "font-noto-sans-cjk-tc"
 end

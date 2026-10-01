@@ -162,7 +162,7 @@ herdr 主題就會跟著 macOS 外觀切成 latte（白色），和深色的終�
 - [Herdr](https://herdr.dev)（終端工作區管理器，逐步取代 tmux）
 - [Ghostty](https://ghostty.org/)
   - [MonaspiceNe Nerd Font](https://www.nerdfonts.com/font-downloads)（Monaspace Neon，p10k 圖示必要）
-  - Noto Sans Mono CJK TC（CJK 後備字型，漢字才會用台灣字形）
+  - Noto Sans CJK TC（CJK 後備字型，漢字才會用台灣字形）
 - [Zsh](https://www.zsh.org/)
   - [zinit](https://github.com/zdharma-continuum/zinit)
   - [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
