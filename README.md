@@ -181,7 +181,7 @@ installed.
 - [Herdr](https://herdr.dev) (terminal workspace manager, gradually replacing tmux)
 - [Ghostty](https://ghostty.org/)
   - [MonaspiceNe Nerd Font](https://www.nerdfonts.com/font-downloads) (Monaspace Neon, required for p10k icons)
-  - Noto Sans CJK TC (CJK fallback, so Han glyphs use Taiwanese forms)
+  - [GenSekiGothic2 TW](https://github.com/ButTaiwan/genseki-font) (源石黑體, the CJK fallback, so Han glyphs use Taiwanese forms; on Linux, unpack the release ttc files into `~/.local/share/fonts`)
 - [Zsh](https://www.zsh.org/)
   - [zinit](https://github.com/zdharma-continuum/zinit)
   - [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
