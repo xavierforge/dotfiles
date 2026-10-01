@@ -6,7 +6,7 @@ theme = Catppuccin Frappe
 # 第二行是 CJK 後備字型：不指定的話 fontconfig 會挑到 KR 版 Noto，漢字字形不對
 # Second entry is the CJK fallback: without it fontconfig picks the KR Noto and
 # Han glyphs come out in Korean forms.
-font-family = JetBrainsMono Nerd Font
+font-family = MonaspiceNe Nerd Font
 font-family = Noto Sans Mono CJK TC
 background-opacity = 0.8
 # 背景模糊半徑 (搭配透明度產生漂亮的毛玻璃效果)

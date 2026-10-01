@@ -46,6 +46,6 @@ if OS.mac?
   # 若已手動裝過同名字型，這行會衝突失敗；install.sh 會忽略並繼續。
   # Conflicts (and fails) if the same font was installed manually;
   # install.sh treats that as non-fatal and carries on.
-  cask "font-jetbrains-mono-nerd-font"
+  cask "font-monaspice-nerd-font"
   cask "font-noto-sans-mono-cjk-tc"
 end
