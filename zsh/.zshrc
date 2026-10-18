@@ -76,7 +76,11 @@ else
   alias t='tmux new-session -A -s main'
 fi
 
-if command -v gls > /dev/null 2>&1; then
+# eza（Omarchy 內建）：彩色權限、圖示，跟 Omarchy bash 的 ls 一致
+if command -v eza > /dev/null 2>&1; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lt='eza --tree --level=2 --long --icons --git'
+elif command -v gls > /dev/null 2>&1; then
   alias ls='gls -hlF --color=auto'
 else
   alias ls='ls -hlFG'
