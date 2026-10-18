@@ -194,8 +194,8 @@ installed.
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/) (required for dashboard image rendering)
   - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) (markdown preview in the browser, pulled in by LazyVim's markdown extra; over ssh it switches to tunnel mode, see [Remote markdown preview (ssh)](#remote-markdown-preview-ssh))
-- [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua`, linked only when
-  Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
+- [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua` and `fcitx5/config`,
+  linked only when Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
 
 # Remote markdown preview (ssh)
 
@@ -247,7 +247,7 @@ Herdr defaults are not repeated here.
 ## Hyprland / Omarchy
 
 Only linked on an Omarchy machine (`install.sh` checks for `/usr/share/omarchy`,
-or `$OMARCHY_PATH`, and skips `hypr/` everywhere else). Omarchy's default
+or `$OMARCHY_PATH`, and skips `hypr/` and `fcitx5/` everywhere else). Omarchy's default
 `Super + arrow` bindings stay as they are; these add Vim's `h/j/k/l` on top.
 Plain `Super + H/J/K/L` is avoided on purpose: Windows intercepts some Super
 combos (`Win + L` locks Windows), so `Shift` is added.
@@ -256,8 +256,16 @@ combos (`Win + L` locks Windows), so `Shift` is added.
 | --- | --- |
 | `Super + Shift + H / J / K / L` | Focus window left / down / up / right |
 | `Super + Ctrl + Shift + H / J / K / L` | Swap window left / down / up / right |
+| `Ctrl + Space` | Toggle Chinese (Zhuyin) / English input (`Super + I` still works) |
 
 After editing, apply and validate with `hyprctl reload && hyprctl configerrors`.
+
+`Ctrl + Space` takes both halves: `fcitx5/config` adds it to the trigger keys,
+and `hypr/bindings.lua` drops Omarchy's terminal binding that only switches back
+to English on `Ctrl + Space` (it exists for a tmux prefix; herdr's prefix is
+`Ctrl + S`, so nothing clashes). When Omarchy reconfigures input methods it strips
+`Control+space` from fcitx5 and replaces the link with a real file; if that
+happens, re-run `./install.sh`, then `fcitx5-remote -r`.
 
 ## Ghostty
 

@@ -1,0 +1,22 @@
+# Omarchy binds Super+I. Ctrl+Space also toggles (herdr uses Ctrl+S, so it's free).
+[Hotkey/TriggerKeys]
+0=Control+space
+1=Zenkaku_Hankaku
+2=Hangul
+
+[Hotkey/ActivateKeys]
+0=Henkan
+
+[Hotkey/DeactivateKeys]
+0=Muhenkan
+
+# A lone Shift leaves an engine like Pinyin for Latin input and returns to it.
+[Hotkey/AltTriggerKeys]
+0=Shift_L
+
+[Hotkey/EnumerateGroupForwardKeys]
+
+[Hotkey/EnumerateGroupBackwardKeys]
+
+[Behavior]
+ActiveByDefault=False

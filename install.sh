@@ -440,10 +440,10 @@ case "$MUX" in
   herdr) STOW_IGNORE=(--ignore='^tmux$')  ;;
   tmux)  STOW_IGNORE=(--ignore='^herdr$') ;;
 esac
-# 不是 Omarchy 就連 hypr/ 一起跳過（見上方 IS_OMARCHY）。
-# Skip hypr/ as well unless this is Omarchy (see IS_OMARCHY above).
+# 不是 Omarchy 就連 hypr/、fcitx5/ 一起跳過（見上方 IS_OMARCHY）。
+# Skip hypr/ and fcitx5/ as well unless this is Omarchy (see IS_OMARCHY above).
 if [ "$IS_OMARCHY" = no ]; then
-  STOW_IGNORE+=(--ignore='^hypr$')
+  STOW_IGNORE+=(--ignore='^hypr$' --ignore='^fcitx5$')
 fi
 
 # 先用「模擬模式」找出會被卡住的既有真實檔案，自動備份後再實際連結。
@@ -524,15 +524,17 @@ if [ "$MUX" != tmux ]; then
   mkdir -p "$HOME/.config/herdr"
 fi
 # 同理，~/.config/hypr 裡還有 Omarchy 產生的 monitors.lua、input.lua 等機器專屬
-# 檔案，只有 bindings.lua 該進 repo，所以也要先確保它是真實目錄。
+# 檔案，只有 bindings.lua 該進 repo，所以也要先確保它是真實目錄。~/.config/fcitx5
+# 也一樣，profile 與 conf/ 由 Omarchy 管，只有 config（快捷鍵）進 repo。
 # Same story for ~/.config/hypr: it also holds Omarchy's machine-specific
 # monitors.lua, input.lua and friends, and only bindings.lua belongs in the repo,
-# so make sure it is a real directory too.
+# so make sure it is a real directory too. Likewise ~/.config/fcitx5: Omarchy
+# owns profile and conf/, only config (the hotkeys) lives here.
 if [ "$IS_OMARCHY" = yes ]; then
-  info "Omarchy detected ($OMARCHY_DIR), linking hypr/bindings.lua as well"
-  mkdir -p "$HOME/.config/hypr"
+  info "Omarchy detected ($OMARCHY_DIR), linking hypr/bindings.lua and fcitx5/config as well"
+  mkdir -p "$HOME/.config/hypr" "$HOME/.config/fcitx5"
 else
-  dim "Not Omarchy, skipping hypr/ (Hyprland keybindings)"
+  dim "Not Omarchy, skipping hypr/ (Hyprland keybindings) and fcitx5/ (input method)"
 fi
 link_pkg "."   "$HOME/.config" "~/.config configs"
 link_pkg "zsh" "$HOME"         "home-level zsh configs"
@@ -603,7 +605,8 @@ if [ "$MUX" != herdr ]; then
   dim "tmux plugins live outside this repo: clone TPM once, then press <prefix> + I (see README)."
 fi
 if [ "$IS_OMARCHY" = yes ]; then
-  ok "Omarchy: Hyprland keybindings linked"
+  ok "Omarchy: Hyprland keybindings and fcitx5 hotkeys linked"
   dim "Apply and validate with: hyprctl reload && hyprctl configerrors"
+  dim "Reload fcitx5 with: fcitx5-remote -r"
 fi
 ok "All done! Open a new shell (or run 'source ~/.zshrc') to pick up changes."

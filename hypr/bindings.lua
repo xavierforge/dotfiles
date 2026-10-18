@@ -27,3 +27,11 @@ o.bind("SUPER + CTRL + SHIFT + H", "Swap window left", hl.dsp.window.swap({ dire
 o.bind("SUPER + CTRL + SHIFT + J", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
 o.bind("SUPER + CTRL + SHIFT + K", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
 o.bind("SUPER + CTRL + SHIFT + L", "Swap window right", hl.dsp.window.swap({ direction = "r" }))
+
+-- Ctrl+Space 交給 fcitx5 當中英切換鍵（見 ~/.config/fcitx5/config）。Omarchy 預設在
+-- 終端機裡把 Ctrl+Space 當成「切回英文、讓 tmux 收到 prefix」，會跟切換互搶，所以移除。
+-- herdr 的 prefix 是 Ctrl+S，不受影響。
+-- Ctrl+Space is fcitx5's input-method toggle (see ~/.config/fcitx5/config).
+-- Omarchy's default forces direct input in terminals for a tmux prefix, which
+-- fights the toggle, so drop it. herdr uses Ctrl+S as its prefix.
+hl.unbind("CTRL + SPACE")

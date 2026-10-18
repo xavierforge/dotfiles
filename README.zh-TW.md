@@ -175,8 +175,8 @@ herdr 主題就會跟著 macOS 外觀切成 latte（白色），和深色的終�
 - [NeoVim](https://neovim.io/)
   - [chafa](https://hpjansson.org/chafa/)（dashboard 圖片渲染必要）
   - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)（在瀏覽器預覽 Markdown，由 LazyVim 的 markdown extra 帶入；ssh 時改走隧道模式，見[遠端 Markdown 預覽（ssh）](#遠端-markdown-預覽ssh)）
-- [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua`，且只在偵測到 Omarchy
-  時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
+- [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua` 與 `fcitx5/config`，且只在
+  偵測到 Omarchy 時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
 
 # 遠端 Markdown 預覽（ssh）
 
@@ -221,7 +221,7 @@ OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是�
 ## Hyprland / Omarchy
 
 只在 Omarchy 機器上連結（`install.sh` 檢查 `/usr/share/omarchy` 或 `$OMARCHY_PATH`
-是否存在，其他機器一律略過 `hypr/`）。Omarchy 預設的 `Super + 方向鍵` 保留不動，
+是否存在，其他機器一律略過 `hypr/` 與 `fcitx5/`）。Omarchy 預設的 `Super + 方向鍵` 保留不動，
 這裡是在其上加一組 Vim 的 `h/j/k/l`。刻意不用 `Super + H/J/K/L`：Windows 會攔截
 部分 Super 組合（`Win + L` 會鎖定 Windows），所以多加一層 `Shift`。
 
@@ -229,8 +229,15 @@ OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是�
 | --- | --- |
 | `Super + Shift + H / J / K / L` | 焦點移到 左 / 下 / 上 / 右 的視窗 |
 | `Super + Ctrl + Shift + H / J / K / L` | 把視窗往 左 / 下 / 上 / 右 交換 |
+| `Ctrl + Space` | 切換中文（注音）／英文輸入法（`Super + I` 一樣可用） |
 
 改完後用 `hyprctl reload && hyprctl configerrors` 套用並檢查。
+
+`Ctrl + Space` 要兩邊一起改：`fcitx5/config` 把它加進切換鍵，`hypr/bindings.lua`
+拿掉 Omarchy 在終端機裡「按 `Ctrl + Space` 只切回英文」的綁定（那是留給 tmux prefix
+用的，herdr 的 prefix 是 `Ctrl + S`，不會撞到）。Omarchy 重新設定輸入法時會把
+`Control+space` 從 fcitx5 拿掉並換成真實檔案；遇到的話重跑 `./install.sh` 再
+`fcitx5-remote -r` 即可。
 
 ## Ghostty
 
