@@ -172,6 +172,46 @@ the herdr theme to latte (light) underneath a dark terminal.
 > directory into a single symlink pointing at this repo on a fresh machine, and
 > runtime files would get written into your dotfiles.
 
+# Claude Code
+
+`claude/settings.json` holds the user-level
+[Claude Code](https://code.claude.com/docs/en/settings) settings that should be
+the same on every machine. It is a baseline, not the whole file: `install.sh`
+merges it into `~/.claude/settings.json` with `jq` (and creates the file when
+there is none yet). Keys in the repo win, keys that exist only on the machine
+(`model`, `modelSettings`, the status line, extra plugins) are left alone, and
+nothing is symlinked, so Claude Code's own writes never show up as repo changes.
+To roll out a change, edit the repo file and re-run `./install.sh`.
+
+The reason it exists is the `attribution` block: with `commit` and `pr` set to
+`""` and `sessionUrl` to `false`, Claude Code stops appending
+`Co-Authored-By: Claude` trailers to commits and the "Generated with Claude
+Code" footer to PRs on a fresh machine too. (`includeCoAuthoredBy` is the
+deprecated old name of that switch.)
+
+What else is in it:
+
+- `cleanupPeriodDays: 3650`: keep session transcripts (and `/resume` history)
+  for ten years instead of the default 30 days.
+- `remoteControlAtStartup: true`: every interactive session connects to Remote
+  Control on start, so it can be picked up from another device.
+- `hooks.SessionStart`: the herdr integration hook, reporting agent state to the
+  herdr pane. The script it runs, `~/.claude/hooks/herdr-agent-state.sh`, is
+  written by `herdr integration install claude` and is **not** tracked here;
+  until it exists the hook fails harmlessly at startup.
+- `enabledPlugins` + `extraKnownMarketplaces`: skill-creator, rust-analyzer-lsp
+  and codex, plus the `openai-codex` marketplace codex comes from.
+- `skipDangerousModePermissionPrompt`, `theme`, `agentPushNotifEnabled`: skip the
+  bypass-permissions confirmation, dark theme, push notifications to the phone.
+
+Deliberately left out as machine-specific: `model`, `modelSettings` (effort per
+model), the coralline `statusLine`, and the `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS`
+env var that `retrovis-mod` needs.
+
+> The merge is `jq`'s recursive object merge, which replaces arrays whole: a
+> `hooks.SessionStart` list on the machine is swapped for the repo's list, not
+> appended to. Paths inside the file use `$HOME` so it works on macOS and Linux.
+
 # Other tools
 
 The two multiplexers are an either/or (see

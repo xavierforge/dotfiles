@@ -155,6 +155,40 @@ herdr 主題就會跟著 macOS 外觀切成 latte（白色），和深色的終�
 > 全新機器上把整個目錄折疊成一個指向本 repo 的符號連結，執行期檔案就會被寫進
 > dotfiles 裡。
 
+# Claude Code
+
+`claude/settings.json` 放的是 [Claude Code](https://code.claude.com/docs/en/settings)
+使用者層級設定裡「每台機器都該一樣」的那幾個鍵。它是基底，不是完整檔案：
+`install.sh` 用 `jq` 把它合併進 `~/.claude/settings.json`（沒有檔案時直接建一份）。
+repo 有的鍵以 repo 為準，本機才有的鍵（`model`、`modelSettings`、狀態列、其他外掛）
+原樣保留，而且不做符號連結，所以 Claude Code 自己寫入的改動不會變成 repo 的 diff。
+要推送新設定，改 repo 的檔案再跑一次 `./install.sh` 即可。
+
+放進 repo 的主因是 `attribution` 這一段：`commit`、`pr` 設成 `""`、`sessionUrl` 設成
+`false`，換新機器 Claude Code 也不會再往 commit 加 `Co-Authored-By: Claude`，或在 PR
+加「Generated with Claude Code」。（`includeCoAuthoredBy` 是這個開關的舊名字，已棄用。）
+
+其他內容：
+
+- `cleanupPeriodDays: 3650`：session 逐字稿（也就是 `/resume` 能回溯的範圍）保留
+  十年，而不是預設的 30 天。
+- `remoteControlAtStartup: true`：每個互動 session 一啟動就連上 Remote Control，
+  可以從其他裝置接手。
+- `hooks.SessionStart`：herdr 整合的 hook，把 agent 狀態回報給 herdr 的 pane。它執行
+  的 `~/.claude/hooks/herdr-agent-state.sh` 由 `herdr integration install claude`
+  寫入，**不在**這個 repo 裡；裝好之前 hook 啟動時會失敗，但無害。
+- `enabledPlugins` + `extraKnownMarketplaces`：skill-creator、rust-analyzer-lsp、
+  codex 三個外掛，加上 codex 所屬的 `openai-codex` marketplace。
+- `skipDangerousModePermissionPrompt`、`theme`、`agentPushNotifEnabled`：跳過
+  bypass permissions 的確認框、深色主題、推播通知到手機。
+
+刻意不放、視為機器專屬的：`model`、`modelSettings`（各模型的 effort）、coralline 的
+`statusLine`，以及 `retrovis-mod` 需要的 `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` 環境變數。
+
+> 合併用的是 `jq` 的遞迴物件合併，陣列會整個取代：本機原有的 `hooks.SessionStart`
+> 清單會被 repo 的清單換掉，不是接在後面。檔案裡的路徑都用 `$HOME`，macOS 和 Linux
+> 共用。
+
 # 其他工具
 
 兩個多工器是二選一（見[選擇 tmux 或 herdr](#選擇-tmux-或-herdr)），其餘工具一律安裝。
