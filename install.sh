@@ -211,6 +211,7 @@ fd|fd-find|fd|fd-find|fd|fd|fd
 tree|tree|tree|tree|tree|tree|tree
 chafa|chafa|chafa|chafa|chafa|chafa|chafa
 zoxide|zoxide|zoxide|zoxide|zoxide|zoxide|zoxide
+jq|jq|jq|jq|jq|jq|jq
 EOF
   if [ "$MUX" = tmux ] || [ "$MUX" = both ]; then
     printf 'tmux|tmux|tmux|tmux|tmux|tmux|tmux\n'
@@ -587,7 +588,44 @@ else
   ok "Created ~/.ssh/sockets (mode 700)"
 fi
 
-# ---------- 6. 收尾 / Wrap up ----------
+# ---------- 6. Claude Code 設定 / Claude Code settings ----------
+# claude/settings.json 只放該在每台機器都一樣的鍵（attribution、herdr hook、外掛……），
+# 不是完整設定檔。Claude Code 的 user 層沒有 local 覆寫檔，所以不能用符號連結：連過去
+# 之後本機才有的 model、statusLine 等鍵就會被 repo 那份蓋掉。改成把 repo 的鍵合併進
+# 本機檔案：repo 有的鍵以 repo 為準，本機多出來的鍵原樣保留，兩邊都有的物件遞迴合併。
+# claude/settings.json holds only the keys that should match on every machine
+# (attribution, the herdr hook, plugins...), not a full settings file. Claude Code
+# has no user-level local override file, so a symlink would let the repo copy
+# wipe machine-only keys such as model or statusLine. Instead the repo keys are
+# merged into the local file: repo keys win, keys that exist only locally are
+# kept as they are, and objects present on both sides merge recursively.
+step "Merging Claude Code settings"
+CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+CLAUDE_BASELINE="$DOTFILES/claude/settings.json"
+if [ ! -e "$CLAUDE_SETTINGS" ]; then
+  mkdir -p "$HOME/.claude"
+  cp "$CLAUDE_BASELINE" "$CLAUDE_SETTINGS"
+  chmod 600 "$CLAUDE_SETTINGS"
+  ok "Created ~/.claude/settings.json from claude/settings.json"
+elif ! command -v jq >/dev/null 2>&1; then
+  warn "jq is missing, so claude/settings.json was not merged into ~/.claude/settings.json"
+  todo "jq  ->  $(install_cmd_for jq)"
+elif ! current="$(jq -c . "$CLAUDE_SETTINGS" 2>&1)"; then
+  warn "~/.claude/settings.json is not valid JSON, left untouched"
+  dim "$current"
+else
+  merged="$(jq -s '.[0] * .[1]' "$CLAUDE_SETTINGS" "$CLAUDE_BASELINE")"
+  if [ "$(printf '%s' "$merged" | jq -c .)" = "$current" ]; then
+    ok "~/.claude/settings.json already has every key from claude/settings.json"
+  else
+    # 直接寫回原檔（不走 mv），檔案若是符號連結也會寫到它指向的地方。
+    # Write in place (no mv) so a symlinked settings.json is followed, not replaced.
+    printf '%s\n' "$merged" >"$CLAUDE_SETTINGS"
+    ok "Merged claude/settings.json into ~/.claude/settings.json"
+  fi
+fi
+
+# ---------- 7. 收尾 / Wrap up ----------
 step "Done"
 if [ "$BACKUP_COUNT" -gt 0 ]; then
   warn "Backed up $BACKUP_COUNT existing file(s) with suffix .$BACKUP_SUFFIX"

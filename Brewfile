@@ -29,6 +29,7 @@ brew "herdr" if %w[herdr both].include?(mux)  # terminal workspace manager, 逐�
 # --- Shell 與導覽 / Shell & navigation ---
 brew "fzf"         # fuzzy finder
 brew "zoxide"      # smarter cd
+brew "jq"          # merges claude/settings.json into ~/.claude/settings.json
 brew "fd"          # fast find (fzf backend)
 brew "ripgrep"     # fast grep (fzf / telescope backend)
 brew "tree"
