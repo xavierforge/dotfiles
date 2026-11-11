@@ -18,6 +18,11 @@ rename_tab = "prefix+comma"
 # 索引式綁定只吃 1..9 這個寫法。
 switch_tab = "alt+1..9"
 
+# tmux 無對應（workspace 是 herdr 的概念）。
+# switch_workspace 預設是空的，不寫就沒有數字鍵可切；
+# switch_tab 搬去 alt 之後 prefix+1..9 剛好空出來。
+switch_workspace = "prefix+1..9"
+
 # tmux: setw -g mode-keys vi + copy-mode-vi 'v' begin-selection
 # copy_mode 沒有預設鍵位，不寫就沒得按；模式內部的按鍵不可設定。
 copy_mode = "prefix+["
