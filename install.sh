@@ -56,6 +56,7 @@ if [ -d "$OMARCHY_DIR" ]; then IS_OMARCHY=yes; else IS_OMARCHY=no; fi
 usage() {
   cat <<'EOF'
 Usage: ./install.sh [--herdr | --tmux | --both] [--install-deps | --no-install-deps]
+                    [--claude | --no-claude]
 
 Options:
   --herdr             Set up herdr as the terminal multiplexer.
@@ -63,6 +64,10 @@ Options:
   --both              Keep both linked and installed.
   --install-deps      Install missing tools without asking (uses sudo).
   --no-install-deps   Never install anything, only report what is missing.
+  --claude            Also apply the author's Claude Code setup: settings baseline,
+                      global CLAUDE.md, skills and agents. Personal, so off unless
+                      asked for or already linked.
+  --no-claude         Skip it for this run; nothing already applied is undone.
   -h, --help          Show this help.
 
 With no option the script keeps whatever is already linked, so re-running it as
@@ -148,6 +153,9 @@ MUX_SOURCE="DOTFILES_MUX"
 # yes = 直接裝，no = 完全不裝，ask = 互動時才問（非互動等於 no）
 # yes = install without asking, no = never install, ask = prompt when interactive
 INSTALL_DEPS="${DOTFILES_INSTALL_DEPS:-ask}"
+# Claude Code 的個人設定：空的 = 沿用現況（CLAUDE.md 已連到這個 repo 就繼續）
+# Personal Claude Code setup: empty = keep what is there (on once CLAUDE.md links here)
+CLAUDE_SETUP="${DOTFILES_CLAUDE:-}"
 while [ $# -gt 0 ]; do
   case "$1" in
     --tmux)  MUX="tmux";  MUX_SOURCE="--tmux";  shift ;;
@@ -155,6 +163,8 @@ while [ $# -gt 0 ]; do
     --both)  MUX="both";  MUX_SOURCE="--both";  shift ;;
     --install-deps)    INSTALL_DEPS="yes"; shift ;;
     --no-install-deps) INSTALL_DEPS="no";  shift ;;
+    --claude)          CLAUDE_SETUP="yes"; shift ;;
+    --no-claude)       CLAUDE_SETUP="no";  shift ;;
     -h|--help) usage; exit 0 ;;
     *) err "Unknown option: $1"; printf '\n' >&2; usage >&2; exit 2 ;;
   esac
@@ -165,6 +175,14 @@ case "$INSTALL_DEPS" in
   1|true)  INSTALL_DEPS="yes" ;;
   0|false) INSTALL_DEPS="no"  ;;
   *) err "Unknown value in DOTFILES_INSTALL_DEPS: $INSTALL_DEPS (expected yes, no or ask)"; exit 2 ;;
+esac
+
+case "$CLAUDE_SETUP" in
+  yes|no) ;;
+  1|true)  CLAUDE_SETUP="yes" ;;
+  0|false) CLAUDE_SETUP="no"  ;;
+  "") if links_into_dotfiles "$HOME/.claude/CLAUDE.md"; then CLAUDE_SETUP="yes"; else CLAUDE_SETUP="no"; fi ;;
+  *) err "Unknown value in DOTFILES_CLAUDE: $CLAUDE_SETUP (expected yes or no)"; exit 2 ;;
 esac
 
 case "$MUX" in
@@ -599,6 +617,7 @@ fi
 # wipe machine-only keys such as model or statusLine. Instead the repo keys are
 # merged into the local file: repo keys win, keys that exist only locally are
 # kept as they are, and objects present on both sides merge recursively.
+merge_claude_settings() {
 step "Merging Claude Code settings"
 CLAUDE_SETTINGS="$HOME/.claude/settings.json"
 CLAUDE_BASELINE="$DOTFILES/claude/settings.json"
@@ -624,6 +643,7 @@ else
     ok "Merged claude/settings.json into ~/.claude/settings.json"
   fi
 fi
+}
 
 # ---------- 7. Claude Code 指示、skills 與 agents / Claude Code instructions, skills, agents ----------
 # CLAUDE.md 沒有機器專屬的內容，直接連結。自寫的 skills 與 agent 角色在另一個 repo
@@ -683,6 +703,7 @@ prune_dead_links() {
   done
 }
 
+link_claude_files() {
 step "Linking Claude Code instructions, skills and agents"
 mkdir -p "$HOME/.claude/skills" "$HOME/.claude/agents"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
@@ -729,6 +750,15 @@ if [ -d "$SKILLS_DIR/skills" ]; then
   prune_dead_links "$HOME/.claude/agents"
   ok "Skills and agents linked from $(short "$SKILLS_DIR")"
 fi
+}
+
+if [ "$CLAUDE_SETUP" = yes ]; then
+  merge_claude_settings
+  link_claude_files
+else
+  step "Claude Code setup"
+  info "Skipped: personal to the author, add --claude to apply it"
+fi
 
 # ---------- 8. 只能由使用者決定的項目 / What only the user can decide ----------
 # 這裡只檢查、只提醒，不會幫忙設定：身分、登入、個人喜好因人而異，不該寫死在 repo。
@@ -770,7 +800,7 @@ check_user_setup() {
   [ -f "$DOTFILES/ghostty/local" ] \
     || remind "[ghostty] optional: per-machine font-size in ~/.config/ghostty/local (README, Ghostty)"
 
-  if [ "$MUX" != tmux ] && [ ! -e "$HOME/.claude/hooks/herdr-agent-state.sh" ]; then
+  if [ "$CLAUDE_SETUP" = yes ] && [ "$MUX" != tmux ] && [ ! -e "$HOME/.claude/hooks/herdr-agent-state.sh" ]; then
     remind "[herdr] herdr integration install claude (the SessionStart hook needs it)"
   fi
 

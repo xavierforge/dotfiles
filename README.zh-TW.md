@@ -189,6 +189,10 @@ repo 有的鍵以 repo 為準，本機才有的鍵（`model`、`modelSettings`�
 刻意不放、視為機器專屬的：`model`、`modelSettings`（各模型的 effort）、coralline 的
 `statusLine`，以及 `retrovis-mod` 需要的 `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` 環境變數。
 
+這一整節都是個人設定，所以要自己開：`./install.sh --claude`（或
+`DOTFILES_CLAUDE=yes`）。`~/.claude/CLAUDE.md` 已經連到這個 repo 的機器，之後直接重跑就會
+沿用；`--no-claude` 則是這次跳過。
+
 `claude/CLAUDE.md`（全域規則）會連結到 `~/.claude/CLAUDE.md`。skills 與 agent 角色來自
 [xavierforge/skills](https://github.com/xavierforge/skills)：`install.sh` 會 clone 到
 `~/playground/skills`（可用 `DOTFILES_SKILLS_DIR` 改），在乾淨的 `main` 上才快轉更新，

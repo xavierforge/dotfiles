@@ -4,8 +4,8 @@ For any agent asked to install, sync, or change these dotfiles. The repo is publ
 
 ## Setup runbook
 
-1. Ask before the first run. `install.sh` also applies the author's personal Claude Code choices: it links `claude/CLAUDE.md` over `~/.claude/CLAUDE.md` (a real file is backed up), clones the author's skills repo and links its skills and agents (`Explore` overrides the built-in), and merges `claude/settings.json`, which skips the bypass-permissions prompt, connects Remote Control at startup, turns off commit attribution, and enables third-party plugins. Tell the user this and get a yes. Someone else will usually want to fork, or trim `claude/` first.
-2. Preview the settings merge and show the differences:
+1. Ask whether they want the author's personal Claude Code setup. It is off unless `--claude` (or `DOTFILES_CLAUDE=yes`) is passed or `~/.claude/CLAUDE.md` already links here. It links `claude/CLAUDE.md` over `~/.claude/CLAUDE.md` (a real file is backed up), clones the author's skills repo and links its skills and agents (`Explore` overrides the built-in), and merges `claude/settings.json`, which skips the bypass-permissions prompt, connects Remote Control at startup, turns off commit attribution, and enables third-party plugins. Never pass `--claude` without a clear yes; someone else will usually want to fork, or trim `claude/` first.
+2. With `--claude`, preview the settings merge and show the differences:
    `diff <(jq -S . ~/.claude/settings.json) <(jq -sS '.[0] * .[1]' ~/.claude/settings.json claude/settings.json)`
 3. Run `./install.sh --no-install-deps` (plus `--herdr`, `--tmux` or `--both` on a fresh machine). Package installs need the user's password or consent: show the printed command instead of running it.
 4. Read the last block of the output. "Still to install" lists missing tools; "Left for you" lists what only the user can set. Go through every item with the user, using the table below. Do not end with just "done".

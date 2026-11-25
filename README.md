@@ -214,6 +214,10 @@ Deliberately left out as machine-specific: `model`, `modelSettings` (effort per
 model), the coralline `statusLine`, and the `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS`
 env var that `retrovis-mod` needs.
 
+This whole section is personal, so it is opt-in: `./install.sh --claude` (or
+`DOTFILES_CLAUDE=yes`). Once `~/.claude/CLAUDE.md` links into this repo, plain
+re-runs keep it on; `--no-claude` skips it for one run.
+
 `claude/CLAUDE.md` (the global rules) is symlinked to `~/.claude/CLAUDE.md`. The
 skills and agent roles come from [xavierforge/skills](https://github.com/xavierforge/skills):
 `install.sh` clones it to `~/playground/skills` (override with
