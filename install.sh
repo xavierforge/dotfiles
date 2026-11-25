@@ -730,7 +730,69 @@ if [ -d "$SKILLS_DIR/skills" ]; then
   ok "Skills and agents linked from $(short "$SKILLS_DIR")"
 fi
 
-# ---------- 8. 收尾 / Wrap up ----------
+# ---------- 8. 只能由使用者決定的項目 / What only the user can decide ----------
+# 這裡只檢查、只提醒，不會幫忙設定：身分、登入、個人喜好因人而異，不該寫死在 repo。
+# 給 agent 的處理方式寫在 AGENTS.md。
+# Check and remind only, never set anything: identity, logins and taste differ per
+# person and do not belong in the repo. AGENTS.md tells agents how to follow up.
+REMIND=(); REMIND_COUNT=0
+remind() { REMIND+=("$1"); REMIND_COUNT=$((REMIND_COUNT + 1)); }
+
+check_user_setup() {
+  local login_shell="" f n
+  [ -n "$(git config --global user.name 2>/dev/null || true)" ] \
+    || remind "[git-name] git config --global user.name \"<your name>\""
+  [ -n "$(git config --global user.email 2>/dev/null || true)" ] \
+    || remind "[git-email] git config --global user.email \"<your email>\""
+
+  if ! command -v gh >/dev/null 2>&1; then
+    remind "[gh] install the GitHub CLI, then: gh auth login && gh auth setup-git"
+  elif ! gh auth status >/dev/null 2>&1; then
+    remind "[gh] gh auth login && gh auth setup-git"
+  fi
+
+  if command -v getent >/dev/null 2>&1; then
+    login_shell="$(getent passwd "$(id -un)" | cut -d: -f7 || true)"
+  elif command -v dscl >/dev/null 2>&1; then
+    login_shell="$(dscl . -read "/Users/$(id -un)" UserShell 2>/dev/null | awk '{print $2}' || true)"
+  fi
+  case "${login_shell:-${SHELL:-}}" in
+    */zsh) ;;
+    *) remind "[shell] chsh -s \"\$(command -v zsh)\", then log out or reboot" ;;
+  esac
+  [ -f "$HOME/.p10k.zsh" ] || remind "[p10k] run: p10k configure (or copy ~/.p10k.zsh from another machine)"
+
+  if [ "$(uname)" != Darwin ] && command -v fc-list >/dev/null 2>&1; then
+    for f in "MonaspiceNe Nerd Font" "GenSekiGothic2 TW"; do
+      [ -n "$(fc-list "$f" 2>/dev/null)" ] || remind "[font] install \"$f\" (README, Other tools)"
+    done
+  fi
+  [ -f "$DOTFILES/ghostty/local" ] \
+    || remind "[ghostty] optional: per-machine font-size in ~/.config/ghostty/local (README, Ghostty)"
+
+  if [ "$MUX" != tmux ] && [ ! -e "$HOME/.claude/hooks/herdr-agent-state.sh" ]; then
+    remind "[herdr] herdr integration install claude (the SessionStart hook needs it)"
+  fi
+
+  if [ "$IS_OMARCHY" = yes ] && [ -f "$HOME/.config/fcitx5/profile" ] \
+     && ! grep '^Name=' "$HOME/.config/fcitx5/profile" | grep -qvE '^Name=(Default|keyboard-.*)$'; then
+    remind "[input] no input method besides the keyboard; if you need one: omarchy setup input"
+  fi
+
+  # 不是這個 repo 的 nvim 外掛檔會讓 lazy-lock.json 在各台之間來回變動。
+  # nvim plugin files that are not ours make lazy-lock.json flap between machines.
+  n=0
+  for f in "$HOME"/.config/nvim/lua/plugins/*.lua; do
+    if [ -e "$f" ] && ! links_into_dotfiles "$f"; then n=$((n + 1)); fi
+  done
+  [ "$n" -eq 0 ] || remind "[nvim] $n plugin file(s) in ~/.config/nvim/lua/plugins are not from this repo"
+}
+
+step "Checking what only you can set"
+check_user_setup
+[ "$REMIND_COUNT" -gt 0 ] || ok "Nothing left to set by hand"
+
+# ---------- 9. 收尾 / Wrap up ----------
 step "Done"
 if [ "$BACKUP_COUNT" -gt 0 ]; then
   warn "Backed up $BACKUP_COUNT existing file(s) with suffix .$BACKUP_SUFFIX"
@@ -742,6 +804,12 @@ if [ "$TODO_COUNT" -gt 0 ]; then
     dim "$item"
   done
   dim "The configs are linked either way; those tools just stay unavailable."
+fi
+if [ "$REMIND_COUNT" -gt 0 ]; then
+  warn "Left for you (never set by this script):"
+  for item in ${REMIND[@]+"${REMIND[@]}"}; do
+    dim "$item"
+  done
 fi
 ok "Multiplexer: $MUX"
 if [ "$MUX" != herdr ]; then

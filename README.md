@@ -104,6 +104,11 @@ Notes:
   name and, when only `fdfind` exists, links it to `~/.local/bin/fd` so the fzf
   integration finds it (`.zshrc` already puts that directory on `PATH`).
 
+After linking, `install.sh` lists what only you can set (git identity, `gh`
+login, login shell, p10k, fonts...) under "Left for you". It never sets those
+itself. Letting an agent do the install? [AGENTS.md](./AGENTS.md) tells it what
+to ask you.
+
 # Update
 
 ```bash

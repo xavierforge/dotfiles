@@ -92,6 +92,10 @@ sudo pacman -S stow git zsh neovim tmux fzf ripgrep fd tree chafa zoxide
   `fdfind` 時會自動連結成 `~/.local/bin/fd`，讓 fzf 整合找得到（`.zshrc` 已經
   把那個目錄加進 `PATH`）。
 
+連結完成後，`install.sh` 會在「Left for you」列出只能由你決定的項目（git 身分、`gh`
+登入、登入 shell、p10k、字型……），不會代為設定。交給 agent 安裝的話，
+[AGENTS.md](./AGENTS.md) 會告訴它該問你什麼。
+
 # 更新
 
 ```bash

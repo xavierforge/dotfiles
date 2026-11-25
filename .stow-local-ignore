@@ -3,6 +3,8 @@
 /zsh              # 連到 $HOME 不是 ~/.config，install.sh 另外處理
 /claude           # 不是 stow 套件；install.sh 用 jq 合併進 ~/.claude/settings.json / not a stow package, install.sh merges it with jq
 ^README.*         # README.md / README.zh-TW.md
+^/AGENTS\.md      # 給 agent 的說明，不是設定檔 / agent guide, not a config
+^/CLAUDE\.md      # 只有一行 @AGENTS.md / one-line import of AGENTS.md
 Brewfile
 install.sh
 ^/\.git.*         # 只擋 repo 根目錄的 .git 與 .gitignore；外掛裡的 .git 要留著
