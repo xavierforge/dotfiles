@@ -768,6 +768,28 @@ fi
 REMIND=(); REMIND_COUNT=0
 remind() { REMIND+=("$1"); REMIND_COUNT=$((REMIND_COUNT + 1)); }
 
+# 檔案的實體位置在 repo 裡就算，不要求檔案本身是連結：~/.config/nvim 可能整個目錄被
+# stow 折疊成一個連結，底下的檔案就是一般檔案。
+# True when the file physically lives in this repo. The file itself need not be a
+# link: stow may fold all of ~/.config/nvim into one link, leaving plain files below.
+lives_in_dotfiles() {
+  local dir root
+  if links_into_dotfiles "$1"; then return 0; fi
+  dir="$(cd "$(dirname "$1")" 2>/dev/null && pwd -P)" || return 1
+  root="$(cd "$DOTFILES" && pwd -P)"
+  [ ! -L "$1" ] || return 1
+  case "$dir/" in
+    "$root"/*) return 0 ;;
+  esac
+  return 1
+}
+
+# 有桌面環境才需要字型；ssh 進去的伺服器用的是本機終端機的字型。
+# Fonts matter only with a desktop; a server over ssh uses the local terminal's.
+has_desktop() {
+  [ -d /usr/share/wayland-sessions ] || [ -d /usr/share/xsessions ]
+}
+
 check_user_setup() {
   local login_shell="" f n
   [ -n "$(git config --global user.name 2>/dev/null || true)" ] \
@@ -792,12 +814,12 @@ check_user_setup() {
   esac
   [ -f "$HOME/.p10k.zsh" ] || remind "[p10k] run: p10k configure (or copy ~/.p10k.zsh from another machine)"
 
-  if [ "$(uname)" != Darwin ] && command -v fc-list >/dev/null 2>&1; then
+  if [ "$(uname)" != Darwin ] && has_desktop && command -v fc-list >/dev/null 2>&1; then
     for f in "MonaspiceNe Nerd Font" "GenSekiGothic2 TW"; do
       [ -n "$(fc-list "$f" 2>/dev/null)" ] || remind "[font] install \"$f\" (README, Other tools)"
     done
   fi
-  [ -f "$DOTFILES/ghostty/local" ] \
+  [ -f "$DOTFILES/ghostty/local" ] || ! command -v ghostty >/dev/null 2>&1 \
     || remind "[ghostty] optional: per-machine font-size in ~/.config/ghostty/local (README, Ghostty)"
 
   if [ "$CLAUDE_SETUP" = yes ] && [ "$MUX" != tmux ] && [ ! -e "$HOME/.claude/hooks/herdr-agent-state.sh" ]; then
@@ -813,7 +835,7 @@ check_user_setup() {
   # nvim plugin files that are not ours make lazy-lock.json flap between machines.
   n=0
   for f in "$HOME"/.config/nvim/lua/plugins/*.lua; do
-    if [ -e "$f" ] && ! links_into_dotfiles "$f"; then n=$((n + 1)); fi
+    if [ -e "$f" ] && ! lives_in_dotfiles "$f"; then n=$((n + 1)); fi
   done
   [ "$n" -eq 0 ] || remind "[nvim] $n plugin file(s) in ~/.config/nvim/lua/plugins are not from this repo"
 }
