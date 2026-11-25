@@ -39,6 +39,7 @@ brew "coreutils"   # GNU coreutils -> `gls`, used by the ls alias
 brew "stylua"      # Lua formatter (see nvim/stylua.toml)
 brew "chafa"       # renders the Neovim dashboard image
 brew "uv"          # Python package/venv manager
+brew "node"        # runtime for Claude Code plugin hooks (codex) and npm-based tooling
 
 # --- 應用程式與字型 / Apps & fonts (macOS only; casks don't exist on Linux) ---
 if OS.mac?
