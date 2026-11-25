@@ -1,6 +1,6 @@
 # Global rules (all projects)
 
-## Commit discipline (applies while working, not only at ship time)
+## Commit discipline (applies while working, not only at PR time)
 
 - Conventional Commits: `type(scope): imperative one-line subject`, lowercase scope named after the subsystem. Types: feat, fix, docs, test, refactor, chore, perf, build, ci.
 - One commit per coherent, reviewable decision (a section of planned work, one complete refactor step). If the subject line needs an "and", split the commit.
