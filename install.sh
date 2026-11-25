@@ -625,7 +625,112 @@ else
   fi
 fi
 
-# ---------- 7. 收尾 / Wrap up ----------
+# ---------- 7. Claude Code 指示、skills 與 agents / Claude Code instructions, skills, agents ----------
+# CLAUDE.md 沒有機器專屬的內容，直接連結。自寫的 skills 與 agent 角色在另一個 repo
+# （xavierforge/skills），這裡負責 clone、更新與連結，所以新機器跑完 install.sh 就齊了。
+# CLAUDE.md holds nothing machine-specific, so it is a plain symlink. The personal
+# skills and agent roles live in their own repo (xavierforge/skills); clone, update
+# and link it here so one install.sh run sets up a new machine completely.
+SKILLS_REPO="https://github.com/xavierforge/skills.git"
+SKILLS_DIR="${DOTFILES_SKILLS_DIR:-$HOME/playground/skills}"
+
+# 把 $HOME 縮寫成 ~；${x/#$HOME/~} 在新版 bash 會再展開 ~，不能用。
+# Shorten $HOME to ~; newer bash expands the ~ in ${x/#$HOME/~} again.
+short() {
+  case "$1" in
+    "$HOME"/*) printf '~%s' "${1#"$HOME"}" ;;
+    *)         printf '%s' "$1" ;;
+  esac
+}
+
+# $1 = 來源 / source, $2 = 連結 / link. 真實檔案或目錄先備份；指向別處的連結直接換掉，
+# 並印出原本的目標。
+# Back up a real file or directory first; a link pointing elsewhere is replaced
+# after printing its old target.
+link_file() {
+  local src="$1" dest="$2" old bak
+  if [ -L "$dest" ]; then
+    old="$(readlink "$dest")"
+    [ "$old" = "$src" ] && return 0
+    rm -f "$dest"
+    warn "Replaced link $(short "$dest") (was $old)"
+  elif [ -e "$dest" ]; then
+    bak="$dest.$BACKUP_SUFFIX"
+    # skill 目錄留在 ~/.claude/skills 裡會被當成另一個 skill 載入，所以移到外面。
+    # A skill directory left inside ~/.claude/skills would still load as a skill,
+    # so move it out.
+    if [ -d "$dest" ]; then
+      mkdir -p "$HOME/.claude/replaced"
+      bak="$HOME/.claude/replaced/$(basename "$dest").$BACKUP_SUFFIX"
+    fi
+    mv "$dest" "$bak"
+    warn "Backed up existing $(short "$dest")  ->  $(short "$bak")"
+    BACKUP_COUNT=$((BACKUP_COUNT + 1))
+  fi
+  ln -s "$src" "$dest"
+}
+
+# 目錄裡指向 skills repo、但來源已不存在的連結（skill 改名或刪除）順手清掉。
+# Drop links into the skills repo whose source is gone (renamed or removed).
+prune_dead_links() {
+  local l
+  for l in "$1"/*; do
+    if [ -L "$l" ] && [ ! -e "$l" ]; then
+      case "$(readlink "$l")" in
+        "$SKILLS_DIR"/*) rm -f "$l"; warn "Removed dead link $(short "$l")" ;;
+      esac
+    fi
+  done
+}
+
+step "Linking Claude Code instructions, skills and agents"
+mkdir -p "$HOME/.claude/skills" "$HOME/.claude/agents"
+link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+ok "~/.claude/CLAUDE.md linked"
+
+if [ ! -e "$SKILLS_DIR" ]; then
+  mkdir -p "$(dirname "$SKILLS_DIR")"
+  if git clone --quiet "$SKILLS_REPO" "$SKILLS_DIR"; then
+    ok "Cloned the skills repo to $(short "$SKILLS_DIR")"
+  else
+    warn "Could not clone $SKILLS_REPO"
+    todo "skills repo  ->  git clone $SKILLS_REPO $SKILLS_DIR"
+  fi
+elif [ -d "$SKILLS_DIR/.git" ]; then
+  # 只在「main、工作目錄乾淨」時快轉，其他情況一律不動。
+  # Fast-forward only on a clean main; anything else is left alone.
+  if [ "$(git -C "$SKILLS_DIR" branch --show-current)" = main ] \
+     && [ -z "$(git -C "$SKILLS_DIR" status --porcelain)" ]; then
+    if git -C "$SKILLS_DIR" pull --ff-only --quiet; then
+      ok "Skills repo is up to date ($(git -C "$SKILLS_DIR" rev-parse --short HEAD))"
+    else
+      warn "Could not fast-forward $(short "$SKILLS_DIR"), linking what is there"
+    fi
+  else
+    warn "$(short "$SKILLS_DIR") is dirty or not on main, not updating it"
+  fi
+else
+  warn "$(short "$SKILLS_DIR") exists but is not a git repo, skipping skills and agents"
+fi
+
+if [ -d "$SKILLS_DIR/skills" ]; then
+  # skill 內部用 ~/.claude/skills/<name> 互相引用，所以一定要連到這裡。
+  # Skills refer to each other through ~/.claude/skills/<name>, so link them there.
+  for d in "$SKILLS_DIR"/skills/*/; do
+    [ -f "$d/SKILL.md" ] || continue
+    d="${d%/}"
+    link_file "$d" "$HOME/.claude/skills/$(basename "$d")"
+  done
+  for f in "$SKILLS_DIR"/agents/claude/*.md; do
+    [ -f "$f" ] || continue
+    link_file "$f" "$HOME/.claude/agents/$(basename "$f")"
+  done
+  prune_dead_links "$HOME/.claude/skills"
+  prune_dead_links "$HOME/.claude/agents"
+  ok "Skills and agents linked from $(short "$SKILLS_DIR")"
+fi
+
+# ---------- 8. 收尾 / Wrap up ----------
 step "Done"
 if [ "$BACKUP_COUNT" -gt 0 ]; then
   warn "Backed up $BACKUP_COUNT existing file(s) with suffix .$BACKUP_SUFFIX"

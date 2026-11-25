@@ -178,12 +178,18 @@ repo 有的鍵以 repo 為準，本機才有的鍵（`model`、`modelSettings`�
   的 `~/.claude/hooks/herdr-agent-state.sh` 由 `herdr integration install claude`
   寫入，**不在**這個 repo 裡；裝好之前 hook 啟動時會失敗，但無害。
 - `enabledPlugins` + `extraKnownMarketplaces`：skill-creator、rust-analyzer-lsp、
-  codex 三個外掛，加上 codex 所屬的 `openai-codex` marketplace。
+  codex、mattpocock-skills 四個外掛，加上 codex 所屬的 `openai-codex` marketplace。
 - `skipDangerousModePermissionPrompt`、`theme`、`agentPushNotifEnabled`：跳過
   bypass permissions 的確認框、深色主題、推播通知到手機。
 
 刻意不放、視為機器專屬的：`model`、`modelSettings`（各模型的 effort）、coralline 的
 `statusLine`，以及 `retrovis-mod` 需要的 `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` 環境變數。
+
+`claude/CLAUDE.md`（全域規則）會連結到 `~/.claude/CLAUDE.md`。skills 與 agent 角色來自
+[xavierforge/skills](https://github.com/xavierforge/skills)：`install.sh` 會 clone 到
+`~/playground/skills`（可用 `DOTFILES_SKILLS_DIR` 改），在乾淨的 `main` 上才快轉更新，
+再把每個 skill 連到 `~/.claude/skills`、每個角色連到 `~/.claude/agents`。擋路的真實檔案
+會先備份。所以同步一台機器就是在這裡 `git pull`，再跑 `./install.sh`。
 
 > 合併用的是 `jq` 的遞迴物件合併，陣列會整個取代：本機原有的 `hooks.SessionStart`
 > 清單會被 repo 的清單換掉，不是接在後面。檔案裡的路徑都用 `$HOME`，macOS 和 Linux

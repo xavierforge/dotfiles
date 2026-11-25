@@ -199,14 +199,23 @@ What else is in it:
   herdr pane. The script it runs, `~/.claude/hooks/herdr-agent-state.sh`, is
   written by `herdr integration install claude` and is **not** tracked here;
   until it exists the hook fails harmlessly at startup.
-- `enabledPlugins` + `extraKnownMarketplaces`: skill-creator, rust-analyzer-lsp
-  and codex, plus the `openai-codex` marketplace codex comes from.
+- `enabledPlugins` + `extraKnownMarketplaces`: skill-creator, rust-analyzer-lsp,
+  codex and mattpocock-skills, plus the `openai-codex` marketplace codex comes
+  from.
 - `skipDangerousModePermissionPrompt`, `theme`, `agentPushNotifEnabled`: skip the
   bypass-permissions confirmation, dark theme, push notifications to the phone.
 
 Deliberately left out as machine-specific: `model`, `modelSettings` (effort per
 model), the coralline `statusLine`, and the `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS`
 env var that `retrovis-mod` needs.
+
+`claude/CLAUDE.md` (the global rules) is symlinked to `~/.claude/CLAUDE.md`. The
+skills and agent roles come from [xavierforge/skills](https://github.com/xavierforge/skills):
+`install.sh` clones it to `~/playground/skills` (override with
+`DOTFILES_SKILLS_DIR`), fast-forwards it when it is a clean `main`, and links each
+skill into `~/.claude/skills` and each role into `~/.claude/agents`. A real file
+in the way is backed up first. So syncing a machine is `git pull` here, then
+`./install.sh`.
 
 > The merge is `jq`'s recursive object merge, which replaces arrays whole: a
 > `hooks.SessionStart` list on the machine is swapped for the repo's list, not
