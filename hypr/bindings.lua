@@ -36,16 +36,35 @@ o.bind("SUPER + CTRL + SHIFT + L", "Swap window right", hl.dsp.window.swap({ dir
 -- fights the toggle, so drop it. herdr uses Ctrl+S as its prefix.
 hl.unbind("CTRL + SPACE")
 
--- 顯示目前 focus 在哪個螢幕。通知會跳在 focus 的那個螢幕上，所以「通知出現在哪」
--- 本身就是答案；內文再附上螢幕名稱與 workspace。
--- Show which monitor has focus. The notification pops up on the focused
--- monitor, so where it appears is the answer; the text adds the output name
--- and workspace.
-o.bind(
-  "SUPER + BACKSLASH",
-  "Show focused monitor",
-  [[omarchy-notification-send --transient -t 2000 -u low "$(hyprctl monitors -j | jq -r '.[] | select(.focused) | "Focus: \(.name)  (workspace \(.activeWorkspace.name))"')"]]
-)
+-- 顯示目前 focus 在哪：focus 的視窗邊框加粗閃一下，同時在 focus 的螢幕跳出 OSD
+-- （螢幕名稱與 workspace）。不用通知：通知那疊會留在第一則出現的螢幕直到清空，
+-- 所以換螢幕後再按，通知還是跳在舊螢幕。OSD 每次開啟都重新選 focus 的螢幕，
+-- 先 close 是為了讓還沒消失的上一個 OSD 也重選。
+-- Show where focus is: pulse the focused window's border and pop an OSD (output
+-- name and workspace) on the focused monitor. Notifications are no good here:
+-- the stack stays on the monitor of its first toast until it empties, so a
+-- press after switching monitors still landed on the old one. The OSD picks
+-- the focused monitor on every open; closing first makes a still-visible OSD
+-- pick again too.
+local function show_focus()
+  local monitor = hl.get_active_monitor()
+  local workspace = hl.get_active_workspace()
+  if monitor then
+    local message = "Focus: " .. monitor.name .. (workspace and ("  ·  workspace " .. workspace.name) or "")
+    hl.exec_cmd("omarchy-shell -q osd close; omarchy-osd -d 1500 -m '" .. message .. "'")
+  end
+
+  local window = hl.get_active_window()
+  if window then
+    local target = "address:" .. window.address
+    hl.dispatch(hl.dsp.window.set_prop({ window = target, prop = "border_size", value = "8" }))
+    hl.timer(function()
+      hl.dispatch(hl.dsp.window.set_prop({ window = target, prop = "border_size", value = "unset" }))
+    end, { timeout = 700, type = "oneshot" })
+  end
+end
+
+o.bind("SUPER + BACKSLASH", "Show focused monitor and window", show_focus)
 
 -- 切換螢幕 focus：SUPER + [ / ]，和上面的 SUPER + \ 三顆相鄰。Omarchy 預設的
 -- CTRL + ALT + (SHIFT +) TAB 保留不動。
