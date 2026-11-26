@@ -225,6 +225,7 @@ repo 有的鍵以 repo 為準，本機才有的鍵（`model`、`modelSettings`�
   - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)（在瀏覽器預覽 Markdown，由 LazyVim 的 markdown extra 帶入；ssh 時改走隧道模式，見[遠端 Markdown 預覽（ssh）](#遠端-markdown-預覽ssh)）
 - [Omarchy](https://omarchy.org/)（只有 `hypr/bindings.lua` 與 `fcitx5/config`，且只在
   偵測到 Omarchy 時連結；見 [Hyprland / Omarchy](#hyprland--omarchy)）
+  - [ydotool](https://github.com/ReimuNotMoe/ydotool)（捲動模式 `Super + '` 必要）
 
 # 遠端 Markdown 預覽（ssh）
 
@@ -278,6 +279,7 @@ OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是�
 | `Super + Shift + H / J / K / L` | 焦點移到 左 / 下 / 上 / 右 的視窗 |
 | `Super + Ctrl + Shift + H / J / K / L` | 把視窗往 左 / 下 / 上 / 右 交換 |
 | `Ctrl + Space` | 切換中文（注音）／英文輸入法（`Super + I` 一樣可用） |
+| `Super + '` | 捲動模式：`j / k` 捲一格、`d / u` 捲半頁、`h / l` 左右捲；`Esc`、`q` 或再按 `Super + '` 離開 |
 
 改完後用 `hyprctl reload && hyprctl configerrors` 套用並檢查。
 
@@ -286,6 +288,12 @@ OSC 52 provider：複製的內容會以終端機跳脫序列送出，而不是�
 用的，herdr 的 prefix 是 `Ctrl + S`，不會撞到）。Omarchy 重新設定輸入法時會把
 `Control+space` 從 fcitx5 拿掉並換成真實檔案；遇到的話重跑 `./install.sh` 再
 `fcitx5-remote -r` 即可。
+
+捲動模式透過 [ydotool](https://github.com/ReimuNotMoe/ydotool) 對游標底下的視窗送出
+滾輪事件。在 Omarchy 上，`install.sh` 會把 `ydotool` 當成必備工具，並啟用它的使用者層
+服務（`ydotool.service`）。daemon 還需要你的帳號在 `input` 群組裡，但腳本不會代為設定，
+因為加入後你執行的程式都能讀取原始輸入裝置；`[ydotool]` 提醒會給出指令
+（`sudo usermod -aG input "$USER"`），重新開機後生效。
 
 ## Ghostty
 

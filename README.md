@@ -254,6 +254,7 @@ installed.
   - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) (markdown preview in the browser, pulled in by LazyVim's markdown extra; over ssh it switches to tunnel mode, see [Remote markdown preview (ssh)](#remote-markdown-preview-ssh))
 - [Omarchy](https://omarchy.org/) (only `hypr/bindings.lua` and `fcitx5/config`,
   linked only when Omarchy is detected; see [Hyprland / Omarchy](#hyprland--omarchy))
+  - [ydotool](https://github.com/ReimuNotMoe/ydotool) (required for scroll mode, `Super + '`)
 
 # Remote markdown preview (ssh)
 
@@ -315,6 +316,7 @@ combos (`Win + L` locks Windows), so `Shift` is added.
 | `Super + Shift + H / J / K / L` | Focus window left / down / up / right |
 | `Super + Ctrl + Shift + H / J / K / L` | Swap window left / down / up / right |
 | `Ctrl + Space` | Toggle Chinese (Zhuyin) / English input (`Super + I` still works) |
+| `Super + '` | Scroll mode: `j / k` a notch, `d / u` half a page, `h / l` sideways; `Esc`, `q` or `Super + '` leaves |
 
 After editing, apply and validate with `hyprctl reload && hyprctl configerrors`.
 
@@ -324,6 +326,14 @@ to English on `Ctrl + Space` (it exists for a tmux prefix; herdr's prefix is
 `Ctrl + S`, so nothing clashes). When Omarchy reconfigures input methods it strips
 `Control+space` from fcitx5 and replaces the link with a real file; if that
 happens, re-run `./install.sh`, then `fcitx5-remote -r`.
+
+Scroll mode sends wheel events to the window under the cursor through
+[ydotool](https://github.com/ReimuNotMoe/ydotool). On Omarchy, `install.sh`
+treats `ydotool` as a required tool and enables its user service
+(`ydotool.service`). The daemon also needs your account in the `input` group,
+which the script never sets, because it lets every program you run read raw
+input devices; the `[ydotool]` reminder gives the command
+(`sudo usermod -aG input "$USER"`), and it takes effect after a reboot.
 
 ## Ghostty
 

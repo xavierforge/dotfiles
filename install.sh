@@ -234,6 +234,12 @@ EOF
   if [ "$MUX" = tmux ] || [ "$MUX" = both ]; then
     printf 'tmux|tmux|tmux|tmux|tmux|tmux|tmux\n'
   fi
+  # hypr/bindings.lua 的捲動模式（SUPER + '）靠 ydotool 送滾輪事件，只有 Omarchy 用得到。
+  # Scroll mode in hypr/bindings.lua (SUPER + ') sends wheel events through
+  # ydotool, so only Omarchy needs it.
+  if [ "$IS_OMARCHY" = yes ]; then
+    printf 'ydotool|ydotool|ydotool|ydotool|ydotool|ydotool|ydotool\n'
+  fi
 }
 
 have_cmd() {
@@ -431,6 +437,32 @@ if [ "$MUX" != tmux ] && ! command -v herdr >/dev/null 2>&1; then
     fi
     command -v herdr >/dev/null 2>&1 \
       || todo "herdr  ->  curl -fsSL https://herdr.dev/install.sh | sh"
+  fi
+fi
+
+# ydotool 要靠 daemon（使用者層的 ydotool.service）才能動。啟用不需要 sudo，所以直接做；
+# 但只有目前就能寫 /dev/uinput（已在 input 群組且生效）時才順便啟動，否則 daemon 會因
+# Restart=always 反覆失敗。input 群組本身留給使用者決定（見第 8 節的 [ydotool] 提醒）。
+# 已啟用就什麼都不印。
+# ydotool only works through its daemon (the user-level ydotool.service).
+# Enabling it needs no sudo, so do it here; but start it right away only when
+# /dev/uinput is already writable (in the input group, and in effect), or the
+# daemon would fail over and over under Restart=always. Joining the input group
+# is left to the user (see the [ydotool] reminder in section 8). Silent once
+# the unit is enabled.
+if [ "$IS_OMARCHY" = yes ] && command -v ydotool >/dev/null 2>&1 \
+   && [ "$(systemctl --user is-enabled ydotool.service 2>/dev/null || true)" != enabled ]; then
+  if [ -w /dev/uinput ]; then YDOTOOL_NOW=(--now); else YDOTOOL_NOW=(); fi
+  if systemctl --user enable ${YDOTOOL_NOW[@]+"${YDOTOOL_NOW[@]}"} --quiet ydotool.service; then
+    if [ -w /dev/uinput ]; then
+      ok "Enabled and started ydotool.service (scroll mode, SUPER + ')"
+    else
+      ok "Enabled ydotool.service (scroll mode, SUPER + ')"
+      dim "It starts after a reboot, provided you are in the input group (see the end of this run)."
+    fi
+  else
+    warn "Could not enable ydotool.service, scroll mode (SUPER + ') stays off"
+    todo "ydotool daemon  ->  systemctl --user enable --now ydotool.service"
   fi
 fi
 
@@ -829,6 +861,16 @@ check_user_setup() {
   if [ "$IS_OMARCHY" = yes ] && [ -f "$HOME/.config/fcitx5/profile" ] \
      && ! grep '^Name=' "$HOME/.config/fcitx5/profile" | grep -qvE '^Name=(Default|keyboard-.*)$'; then
     remind "[input] no input method besides the keyboard; if you need one: omarchy setup input"
+  fi
+
+  # 加進 input 群組後，你執行的程式都能讀取原始輸入裝置（包括鍵盤），所以留給使用者決定。
+  # 查群組資料庫（id -nG <name>），不是目前行程那份可能過時的群組（plain id -nG）。
+  # Joining input lets every program you run read raw input devices (keyboard
+  # included), hence left to the user. Ask the group database (id -nG <name>),
+  # not this process's possibly stale groups (plain id -nG).
+  if [ "$IS_OMARCHY" = yes ] && command -v ydotool >/dev/null 2>&1 \
+     && ! id -nG "$(id -un)" | tr ' ' '\n' | grep -qx input; then
+    remind "[ydotool] sudo usermod -aG input \"\$USER\", then reboot (scroll mode needs it; lets your programs read raw input devices)"
   fi
 
   # 不是這個 repo 的 nvim 外掛檔會讓 lazy-lock.json 在各台之間來回變動。
