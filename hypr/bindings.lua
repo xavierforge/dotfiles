@@ -88,3 +88,41 @@ o.bind("SUPER + SHIFT + BRACKETRIGHT", "Move window to next monitor", o.workspac
 local slash = require("default.hypr.keyboard").key("SLASH")
 hl.unbind("SUPER + " .. slash)
 hl.unbind("SUPER + ALT + " .. slash)
+
+-- 用鍵盤捲動（捲動模式）：SUPER + ' 進入，之後不用按修飾鍵，j / k 捲一格、
+-- d / u 捲半頁、h / l 左右捲，按住會連續捲；Esc、q 或再按一次 SUPER + ' 離開。
+-- 做成模式而不是「按住 SUPER + 某鍵」，是因為 SUPER 還按著時送出的滾輪事件會被
+-- Omarchy 的「SUPER + 滾輪切換 workspace」攔走。捲的是游標底下的視窗。
+-- 需要 ydotool 與它的 daemon（ydotool.service，帳號要在 input 群組）。
+-- Keyboard scrolling as a mode: SUPER + ' enters it, then with no modifier
+-- j / k scroll a notch, d / u half a page, h / l sideways, and holding
+-- repeats; Esc, q, or SUPER + ' again leaves. It is a mode rather than
+-- "hold SUPER + key" because wheel events sent while SUPER is down get
+-- swallowed by Omarchy's "SUPER + wheel switches workspace". The window under
+-- the cursor is what scrolls. Needs ydotool and its daemon (ydotool.service,
+-- with the user in the input group).
+local function wheel(x, y)
+  return "ydotool mousemove -w -x " .. x .. " -y " .. y
+end
+
+local function scroll_mode(on)
+  return function()
+    hl.dispatch(hl.dsp.submap(on and "scroll" or "reset"))
+    local message = on and "Scroll mode:  j/k  d/u  h/l   (Esc to exit)" or "Scroll mode off"
+    hl.exec_cmd("omarchy-shell -q osd close; omarchy-osd -d " .. (on and 2500 or 800) .. " -m '" .. message .. "'")
+  end
+end
+
+o.bind("SUPER + APOSTROPHE", "Scroll mode", scroll_mode(true))
+
+hl.define_submap("scroll", function()
+  o.bind("J", "Scroll down", wheel(0, -1), { repeating = true })
+  o.bind("K", "Scroll up", wheel(0, 1), { repeating = true })
+  o.bind("D", "Scroll down half a page", wheel(0, -6), { repeating = true })
+  o.bind("U", "Scroll up half a page", wheel(0, 6), { repeating = true })
+  o.bind("H", "Scroll left", wheel(-1, 0), { repeating = true })
+  o.bind("L", "Scroll right", wheel(1, 0), { repeating = true })
+  o.bind("ESCAPE", "Leave scroll mode", scroll_mode(false))
+  o.bind("Q", "Leave scroll mode", scroll_mode(false))
+  o.bind("SUPER + APOSTROPHE", "Leave scroll mode", scroll_mode(false))
+end)
