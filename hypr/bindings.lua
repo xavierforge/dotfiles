@@ -60,3 +60,12 @@ o.bind("SUPER + BRACKETRIGHT", "Focus on next monitor", hl.dsp.focus({ monitor =
 -- focus, SHIFT to move). Omarchy's default SUPER + SHIFT + CTRL + arrows stay.
 o.bind("SUPER + SHIFT + BRACKETLEFT", "Move window to previous monitor", o.workspaces.move_window_to_monitor("-1"))
 o.bind("SUPER + SHIFT + BRACKETRIGHT", "Move window to next monitor", o.workspaces.move_window_to_monitor("+1"))
+
+-- 螢幕縮放快捷鍵太容易誤觸（一按就從 2x 跳到 4x），移除；縮放改從 Display 面板
+-- （SUPER + CTRL + D）調整。按鍵名稱跟著鍵盤配置走，所以沿用 Omarchy 的 keyboard.key。
+-- The monitor scaling keys are too easy to hit by accident, so drop them;
+-- scaling stays available in the Display panel (SUPER + CTRL + D). The key
+-- name follows the keyboard layout, hence Omarchy's keyboard.key.
+local slash = require("default.hypr.keyboard").key("SLASH")
+hl.unbind("SUPER + " .. slash)
+hl.unbind("SUPER + ALT + " .. slash)
