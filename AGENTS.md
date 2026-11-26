@@ -25,6 +25,7 @@ Never fill these in from this repo, git history, another machine, or a guess. As
 | `ghostty` | Which font size? It depends on the display. |
 | `herdr` | `herdr integration install claude` writes the hook script. |
 | `input` | Which input method? `omarchy setup input` may rewrite `fcitx5/config`; check `git status` after. |
+| `ydotool` | Joining `input` lets every program they run read raw input devices (keyboard included); their call. `usermod` needs sudo, and only a reboot applies it (logging out is not enough while linger keeps the user manager running). |
 | `nvim` | Files left by a distro's own nvim setup. Offer to move them to a backup. |
 
 Not detectable, so always mention:
