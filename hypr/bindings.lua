@@ -35,3 +35,28 @@ o.bind("SUPER + CTRL + SHIFT + L", "Swap window right", hl.dsp.window.swap({ dir
 -- Omarchy's default forces direct input in terminals for a tmux prefix, which
 -- fights the toggle, so drop it. herdr uses Ctrl+S as its prefix.
 hl.unbind("CTRL + SPACE")
+
+-- 顯示目前 focus 在哪個螢幕。通知會跳在 focus 的那個螢幕上，所以「通知出現在哪」
+-- 本身就是答案；內文再附上螢幕名稱與 workspace。
+-- Show which monitor has focus. The notification pops up on the focused
+-- monitor, so where it appears is the answer; the text adds the output name
+-- and workspace.
+o.bind(
+  "SUPER + BACKSLASH",
+  "Show focused monitor",
+  [[omarchy-notification-send --transient -t 2000 -u low "$(hyprctl monitors -j | jq -r '.[] | select(.focused) | "Focus: \(.name)  (workspace \(.activeWorkspace.name))"')"]]
+)
+
+-- 切換螢幕 focus：SUPER + [ / ]，和上面的 SUPER + \ 三顆相鄰。Omarchy 預設的
+-- CTRL + ALT + (SHIFT +) TAB 保留不動。
+-- Monitor focus on SUPER + [ / ], next to SUPER + \ above. Omarchy's default
+-- CTRL + ALT + (SHIFT +) TAB stays untouched.
+o.bind("SUPER + BRACKETLEFT", "Focus on previous monitor", hl.dsp.focus({ monitor = "-1" }))
+o.bind("SUPER + BRACKETRIGHT", "Focus on next monitor", hl.dsp.focus({ monitor = "+1" }))
+
+-- 把視窗搬到另一個螢幕：同一組 [ / ] 再加 SHIFT（focus 不加、搬動加 SHIFT）。
+-- Omarchy 預設的 SUPER + SHIFT + CTRL + 方向鍵保留不動。
+-- Move the window to another monitor: the same [ / ] keys plus SHIFT (plain to
+-- focus, SHIFT to move). Omarchy's default SUPER + SHIFT + CTRL + arrows stay.
+o.bind("SUPER + SHIFT + BRACKETLEFT", "Move window to previous monitor", o.workspaces.move_window_to_monitor("-1"))
+o.bind("SUPER + SHIFT + BRACKETRIGHT", "Move window to next monitor", o.workspaces.move_window_to_monitor("+1"))
